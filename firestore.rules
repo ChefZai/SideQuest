@@ -9,7 +9,7 @@ match/users/{uid}{allow create,read,update:if signed()&&request.auth.uid==uid;}
 match/spaces/{id}{
 allow create:if signed()&&request.resource.data.ownerId==request.auth.uid&&request.auth.uid in request.resource.data.memberIds;
 allow read:if signed()&&request.auth.uid in resource.data.memberIds;
-allow update:if manager(id)||(signed()&&!(request.auth.uid in resource.data.memberIds)&&request.auth.uid in request.resource.data.memberIds&&request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds','memberNames','updatedAt']));
+allow update:if manager(id)||(member(id)&&request.resource.data.diff(resource.data).affectedKeys().hasOnly(['categories','updatedAt']))||(signed()&&!(request.auth.uid in resource.data.memberIds)&&request.auth.uid in request.resource.data.memberIds&&request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds','memberNames','updatedAt']));
 allow delete:if owner(id);}
 match/ideas/{id}{
 allow create:if member(request.resource.data.spaceId)&&request.resource.data.createdBy==request.auth.uid;
