@@ -1,4 +1,4 @@
-import{addDoc,arrayUnion,collection,deleteDoc,doc,getDocs,limit,onSnapshot,query,serverTimestamp,setDoc,Timestamp,updateDoc,where,type Unsubscribe}from"firebase/firestore";
+import{addDoc,arrayUnion,collection,deleteDoc,doc,getDoc,getDocs,limit,onSnapshot,query,serverTimestamp,setDoc,Timestamp,updateDoc,where,type Unsubscribe}from"firebase/firestore";
 import{deleteObject,getDownloadURL,ref,uploadBytesResumable}from"firebase/storage";
 import{db,storage}from"../firebase";
 import{compressImage}from"./images";
@@ -17,8 +17,10 @@ export async function addIdea(input:Omit<Idea,"id"|"createdAt"|"updatedAt">){ret
 export async function changeIdea(id:string,patch:Partial<Idea>){const clean:Record<string,unknown>=Object.fromEntries(Object.entries(patch).filter(([,v])=>v!==undefined));if(patch.completed===true&&!patch.completedAt)clean.completedAt=serverTimestamp();return withTimeout(updateDoc(doc(db,"ideas",id),{...clean,updatedAt:serverTimestamp()}),15000,"Updating Idea");}
 export async function deleteIdea(id:string){return withTimeout(deleteDoc(doc(db,"ideas",id)),15000,"Deleting Idea");}
 export function watchPlan(ideaId:string,next:(plan:Plan|null)=>void):Unsubscribe{return onSnapshot(doc(db,"plans",ideaId),snapshot=>next(snapshot.exists()?item<Plan>(snapshot):null));}
+export async function ensurePlan(plan:Plan){const reference=doc(db,"plans",plan.id);if(!(await getDoc(reference)).exists()){const{id,...value}=plan;await setDoc(reference,{...value,updatedAt:serverTimestamp()});}}
 export async function savePlan(plan:Plan){const{id,...value}=plan;return withTimeout(setDoc(doc(db,"plans",id),{...value,updatedAt:serverTimestamp()},{merge:true}),15000,"Saving plan");}
 export function watchMemory(ideaId:string,next:(memory:Memory|null)=>void):Unsubscribe{return onSnapshot(doc(db,"memories",ideaId),snapshot=>next(snapshot.exists()?item<Memory>(snapshot):null));}
+export async function ensureMemory(memory:Memory){const reference=doc(db,"memories",memory.id);if(!(await getDoc(reference)).exists()){const{id,...value}=memory;await setDoc(reference,{...value,updatedAt:serverTimestamp()});}}
 export async function saveMemory(memory:Memory){const{id,...value}=memory;return withTimeout(setDoc(doc(db,"memories",id),{...value,updatedAt:serverTimestamp()},{merge:true}),15000,"Saving memory");}
 export function watchReflections(ideaId:string,next:(items:Reflection[])=>void):Unsubscribe{return onSnapshot(collection(db,"memories",ideaId,"reflections"),snapshot=>next(snapshot.docs.map(d=>item<Reflection>(d))));}
 export async function saveReflection(ideaId:string,value:Reflection){const{id,...data}=value;return withTimeout(setDoc(doc(db,"memories",ideaId,"reflections",id),{...data,updatedAt:serverTimestamp(),createdAt:serverTimestamp()},{merge:true}),15000,"Saving reflection");}
