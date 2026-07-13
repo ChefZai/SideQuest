@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src/main.tsx", "src/firebase.ts", "src/app/App.tsx", "src/types/**/*.ts", "src/config/**/*.ts", "src/services/**/*.ts"],
+  "exclude": ["src/app/components", "src/app/LegacyPrototype.tsx", "src/app/App-backup.tsx", "src/firebase.legacy.ts"]
+}
