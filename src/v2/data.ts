@@ -5,8 +5,9 @@ import{compressImage}from"./images";
 import{retry,withTimeout}from"./reliability";
 import type{ActivityItem,Comment,Idea,Memory,Plan,Reaction,Reflection,Space}from"./domain";
 const item=<T>(snap:{id:string;data:()=>unknown})=>({id:snap.id,...(snap.data()as object)})as T;
+const normalizeSpace=(value:Space):Space=>({...value,adminIds:value.adminIds||[],memberNames:value.memberNames||Object.fromEntries(value.memberIds.map((id,index)=>[id,index===0?"Owner":"Member"]))});
 const stamp=(value:unknown)=>value&&typeof value==="object"&&"toMillis"in value?(value as Timestamp).toMillis():0;
-export function watchSpaces(uid:string,next:(items:Space[])=>void,error:(e:Error)=>void):Unsubscribe{return onSnapshot(query(collection(db,"spaces"),where("memberIds","array-contains",uid)),snapshot=>next(snapshot.docs.map(d=>item<Space>(d)).sort((a,b)=>stamp(b.updatedAt)-stamp(a.updatedAt))),error);}
+export function watchSpaces(uid:string,next:(items:Space[])=>void,error:(e:Error)=>void):Unsubscribe{return onSnapshot(query(collection(db,"spaces"),where("memberIds","array-contains",uid)),snapshot=>next(snapshot.docs.map(d=>normalizeSpace(item<Space>(d))).sort((a,b)=>stamp(b.updatedAt)-stamp(a.updatedAt))),error);}
 export function watchIdeas(spaceId:string,next:(items:Idea[])=>void,error:(e:Error)=>void):Unsubscribe{return onSnapshot(query(collection(db,"ideas"),where("spaceId","==",spaceId)),snapshot=>next(snapshot.docs.map(d=>item<Idea>(d)).sort((a,b)=>stamp(b.createdAt)-stamp(a.createdAt))),error);}
 export async function addSpace(input:Omit<Space,"id"|"createdAt"|"updatedAt">){return withTimeout(addDoc(collection(db,"spaces"),{...input,createdAt:serverTimestamp(),updatedAt:serverTimestamp()}),15000,"Creating Space");}
 export async function changeSpace(id:string,patch:Partial<Space>){return withTimeout(updateDoc(doc(db,"spaces",id),{...patch,updatedAt:serverTimestamp()}),15000,"Updating Space");}
