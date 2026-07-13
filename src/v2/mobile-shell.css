@@ -1,0 +1,117 @@
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html {
+  background: #080b0a;
+  touch-action: manipulation;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  min-width: 0;
+}
+
+#root {
+  min-width: 0;
+}
+
+.shell {
+  width: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.appbar {
+  height: calc(68px + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+}
+
+.content {
+  width: 100%;
+  height: calc(100dvh - 68px - env(safe-area-inset-top));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+.nav {
+  bottom: calc(8px + env(safe-area-inset-bottom));
+}
+
+.backdrop {
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.modal {
+  max-height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vlanding,
+.auth,
+.onboard,
+.busy {
+  width: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.vlanding,
+.auth,
+.onboard {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 720px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  .modal {
+    width: calc(100vw - 20px);
+  }
+}
+
+@supports not (height: 100dvh) {
+  .shell,
+  .vlanding,
+  .auth,
+  .onboard,
+  .busy,
+  .backdrop {
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+  }
+
+  .content {
+    height: calc(100vh - 68px - env(safe-area-inset-top));
+  }
+
+  .modal {
+    max-height: calc(100vh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+}
