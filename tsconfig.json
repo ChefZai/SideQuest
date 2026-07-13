@@ -1,10 +1,5 @@
 {
-  "compilerOptions": {
-    "target": "ES2022", "lib": ["ES2022", "DOM", "DOM.Iterable"], "skipLibCheck": true,
-    "esModuleInterop": true, "allowSyntheticDefaultImports": true, "strict": true,
-    "module": "ESNext", "moduleResolution": "Bundler", "resolveJsonModule": true,
-    "isolatedModules": true, "allowImportingTsExtensions": true, "noEmit": true, "jsx": "react-jsx"
-  },
-  "include": ["src/vite-env.d.ts", "src/main.tsx", "src/firebase.ts", "src/app/App.tsx", "src/types/**/*.ts", "src/config/**/*.ts", "src/services/**/*.ts"],
-  "exclude": ["src/app/components", "src/app/LegacyPrototype.tsx", "src/app/App-backup.tsx", "src/firebase.legacy.ts"]
+  "compilerOptions":{"target":"ES2022","lib":["ES2022","DOM","DOM.Iterable"],"skipLibCheck":true,"esModuleInterop":true,"allowSyntheticDefaultImports":true,"strict":true,"module":"ESNext","moduleResolution":"Bundler","resolveJsonModule":true,"isolatedModules":true,"allowImportingTsExtensions":true,"noEmit":true,"jsx":"react-jsx"},
+  "include":["src/vite-env.d.ts","src/main.tsx","src/firebase.ts","src/v2/**/*.ts","src/v2/**/*.tsx","src/types/**/*.ts","src/config/**/*.ts","src/services/auth.ts"],
+  "exclude":["legacy","src/app","src/services/data.ts","src/services/storage.ts"]
 }
