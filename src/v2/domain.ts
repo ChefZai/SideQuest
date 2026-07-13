@@ -3,7 +3,7 @@ export type Role="owner"|"admin"|"member";
 export interface CategoryDef{id:string;emoji:string;label:string;accent:string}
 export interface ReactionDef{type:string;emoji:string;label:string}
 export interface Space{id:string;name:string;emoji:string;type:string;ownerId:string;adminIds:string[];memberIds:string[];memberNames:Record<string,string>;categories:CategoryDef[];reactionDefs:ReactionDef[];deletedAt?:Timestamp|null;purgeAfter?:Timestamp|null;createdAt?:Timestamp;updatedAt?:Timestamp}
-export interface Idea{id:string;spaceId:string;title:string;category:string;categoryEmoji:string;accent:string;description:string;location:string;tags:string[];price:string;duration:string;photoUrl:string;createdBy:string;createdByName:string;completed:boolean;completionRequestedBy?:string[];completedAt?:Timestamp|null;createdAt?:Timestamp;updatedAt?:Timestamp}
+export interface Idea{id:string;spaceId:string;title:string;category:string;categoryEmoji:string;accent:string;description:string;location:string;placeId?:string;latitude?:number|null;longitude?:number|null;mapsUrl?:string;tags:string[];price:string;duration:string;photoUrl:string;createdBy:string;createdByName:string;completed:boolean;completionRequestedBy?:string[];completedAt?:Timestamp|null;createdAt?:Timestamp;updatedAt?:Timestamp}
 export interface PlanStep{id:string;title:string;time:string}
 export interface ChecklistItem{id:string;text:string;done:boolean;assigneeId:string;role:string}
 export interface PlanRole{id:string;name:string;memberId:string}
