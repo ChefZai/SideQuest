@@ -1,8 +1,10 @@
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithPopup,
   signOut,
   updateProfile,
@@ -12,8 +14,8 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import type { UserProfile } from "../types/domain";
 
-export const observeAuth = (callback: (user: User | null) => void) =>
-  onAuthStateChanged(auth, callback);
+export const observeAuth = (callback: (user: User | null) => void, error?: (error: Error) => void) =>
+  onAuthStateChanged(auth, callback, error);
 
 export async function createAccount(
   email: string,
@@ -21,15 +23,29 @@ export async function createAccount(
   displayName: string,
 ) {
   const credential = await createUserWithEmailAndPassword(auth, email, password);
-  await updateProfile(credential.user, { displayName });
-  await setDoc(doc(db, "users", credential.user.uid), {
-    displayName,
-    email,
-    photoUrl: null,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-  return credential.user;
+  try {
+    await updateProfile(credential.user, { displayName });
+    await setDoc(doc(db, "users", credential.user.uid), {
+      displayName,
+      email,
+      photoUrl: null,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return credential.user;
+  } catch (error) {
+    try {
+      await deleteUser(credential.user);
+    } catch {
+      // If rollback fails, the next sign-in can still repair the missing profile.
+    }
+    throw error;
+  }
+}
+
+export async function resetPassword(email: string) {
+  if (!email.trim()) throw new Error("Enter your email address first.");
+  await sendPasswordResetEmail(auth, email.trim());
 }
 
 export async function signIn(email: string, password: string) {

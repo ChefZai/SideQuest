@@ -1,13 +1,31 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    function space(spaceId) {
+      return firestore.get(/databases/(default)/documents/spaces/$(spaceId));
+    }
+
+    function member(spaceId) {
+      return request.auth != null
+        && request.auth.uid in space(spaceId).data.memberIds
+        && space(spaceId).data.deletedAt == null;
+    }
+
+    function owner(spaceId) {
+      return member(spaceId) && space(spaceId).data.ownerId == request.auth.uid;
+    }
+
     match /spaces/{spaceId}/{kind}/{ownerId}/{userId}/{fileName} {
-      allow read: if request.auth != null;
-      allow create, update: if request.auth != null
+      allow read: if member(spaceId);
+
+      allow create, update: if member(spaceId)
         && request.auth.uid == userId
+        && (kind == 'ideas' || kind == 'memories')
         && request.resource.size < 1024 * 1024
         && request.resource.contentType.matches('image/.*');
-      allow delete: if request.auth != null && request.auth.uid == userId;
+
+      allow delete: if member(spaceId)
+        && (request.auth.uid == userId || owner(spaceId));
     }
   }
 }

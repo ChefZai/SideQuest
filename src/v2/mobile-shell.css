@@ -83,7 +83,7 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   input,
   textarea,
   select {
