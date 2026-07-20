@@ -1,10 +1,11 @@
 import {
   createUserWithEmailAndPassword,
   deleteUser,
+  getAdditionalUserInfo,
   GoogleAuthProvider,
   onAuthStateChanged,
-  signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
   updateProfile,
@@ -12,10 +13,26 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import type { UserProfile } from "../types/domain";
+import type { OnboardingState, UserProfile } from "../types/domain";
 
-export const observeAuth = (callback: (user: User | null) => void, error?: (error: Error) => void) =>
-  onAuthStateChanged(auth, callback, error);
+export const NEW_USER_ONBOARDING: OnboardingState = {
+  started: false,
+  step: "welcome",
+  completed: false,
+  dismissedTips: [],
+};
+
+export const LEGACY_USER_ONBOARDING: OnboardingState = {
+  started: true,
+  step: "complete",
+  completed: true,
+  dismissedTips: [],
+};
+
+export const observeAuth = (
+  callback: (user: User | null) => void,
+  error?: (error: Error) => void,
+) => onAuthStateChanged(auth, callback, error);
 
 export async function createAccount(
   email: string,
@@ -29,6 +46,7 @@ export async function createAccount(
       displayName,
       email,
       photoUrl: null,
+      onboarding: NEW_USER_ONBOARDING,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -57,14 +75,17 @@ export async function signInWithGoogle() {
   provider.setCustomParameters({ prompt: "select_account" });
   const credential = await signInWithPopup(auth, provider);
   const user = credential.user;
+  const isNewUser = getAdditionalUserInfo(credential)?.isNewUser === true;
 
   await setDoc(
     doc(db, "users", user.uid),
     {
-      displayName:
-        user.displayName || user.email?.split("@")[0] || "Explorer",
+      displayName: user.displayName || user.email?.split("@")[0] || "Explorer",
       email: user.email || "",
       photoUrl: user.photoURL || null,
+      ...(isNewUser
+        ? { onboarding: NEW_USER_ONBOARDING, createdAt: serverTimestamp() }
+        : {}),
       updatedAt: serverTimestamp(),
     },
     { merge: true },
@@ -79,6 +100,8 @@ export async function signOutUser() {
 
 export async function getUserProfile(user: User): Promise<UserProfile> {
   const data = (await getDoc(doc(db, "users", user.uid))).data();
+  const savedOnboarding = data?.onboarding;
+
   return {
     id: user.uid,
     displayName:
@@ -88,5 +111,27 @@ export async function getUserProfile(user: User): Promise<UserProfile> {
       "Explorer",
     email: user.email || "",
     photoUrl: data?.photoUrl || user.photoURL || null,
+    onboarding: savedOnboarding
+      ? {
+          started: Boolean(savedOnboarding.started),
+          step: savedOnboarding.step || "welcome",
+          completed: Boolean(savedOnboarding.completed),
+          dismissedTips: Array.isArray(savedOnboarding.dismissedTips)
+            ? savedOnboarding.dismissedTips
+            : [],
+          replaying: Boolean(savedOnboarding.replaying),
+        }
+      : LEGACY_USER_ONBOARDING,
   };
+}
+
+export async function updateUserOnboarding(
+  uid: string,
+  onboarding: OnboardingState,
+) {
+  await setDoc(
+    doc(db, "users", uid),
+    { onboarding, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
 }

@@ -169,6 +169,26 @@ test("the Space owner can complete an Idea", async () => {
   }));
 });
 
+test("onboarding state is private to its user", async () => {
+  const ownerDb = env.authenticatedContext(ownerId).firestore();
+  const outsiderDb = env.authenticatedContext(outsiderId).firestore();
+  const profile = {
+    displayName: "Owner",
+    onboarding: {
+      started: true,
+      step: "idea",
+      completed: false,
+      dismissedTips: ["map"],
+    },
+    updatedAt: Timestamp.now(),
+  };
+  await assertSucceeds(setDoc(doc(ownerDb, "users", ownerId), profile));
+  await assertSucceeds(getDoc(doc(ownerDb, "users", ownerId)));
+  await assertFails(getDoc(doc(outsiderDb, "users", ownerId)));
+  await assertFails(updateDoc(doc(outsiderDb, "users", ownerId), {
+    onboarding: { ...profile.onboarding, completed: true },
+  }));
+});
 test("Storage allows members and blocks outsiders", async () => {
   const memberStorage = env.authenticatedContext(memberId).storage();
   const outsiderStorage = env.authenticatedContext(outsiderId).storage();
