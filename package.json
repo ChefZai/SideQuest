@@ -9,7 +9,19 @@
                     "typecheck":  "tsc --noEmit",
                     "check":  "npm run typecheck \u0026\u0026 npm run build",
                     "test:rules":  "firebase emulators:exec --only firestore,storage \"node --test tests/rules.test.mjs\"",
-                    "test:onboarding":  "node --test tests/onboarding-render.test.mjs"
+                    "test:onboarding":  "node --test tests/onboarding-render.test.mjs",
+                    "test:templates":  "node --test tests/templates.test.mjs",
+                    "test:space-templates":  "node --test tests/space-template-flow.test.mjs",
+                    "test:category-packs":  "node --test tests/category-packs.test.mjs",
+                    "test:starter-ideas":  "node --test tests/starter-ideas.test.mjs",
+                    "test:idea-picker":  "node --test tests/idea-template-picker.test.mjs",
+                    "test:template-editor":  "node --test tests/template-editor.test.mjs",
+                    "test:idea-cards":  "node --test tests/idea-cards.test.mjs",
+                    "test:idea-details":  "node --test tests/idea-template-details.test.mjs",
+                    "test:inspiration":  "node --test tests/inspiration-catalog.test.mjs",
+                    "test:seasonal":  "node --test tests/seasonal-inspiration.test.mjs",
+                    "test:help":  "node --test tests/help-content.test.mjs",
+                    "test:version-history":  "node --test tests/version-history.test.mjs"
                 },
     "dependencies":  {
                          "firebase":  "^12.16.0",
