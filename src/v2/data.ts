@@ -3,13 +3,15 @@ import{deleteObject,getDownloadURL,ref,uploadBytesResumable}from"firebase/storag
 import{db,storage}from"../firebase";
 import{compressImage}from"./images";
 import{retry,withTimeout}from"./reliability";
+import{normalizeIdeaTemplateDocument,normalizeSpaceTemplateDocument}from"../features/templates/templateValidation";
 import type{ActivityItem,Comment,Idea,Memory,Plan,Reaction,Reflection,Space}from"./domain";
 const item=<T>(snap:{id:string;data:()=>unknown})=>({id:snap.id,...(snap.data()as object)})as T;
-const normalizeSpace=(value:Space):Space=>({...value,adminIds:value.adminIds||[],memberNames:value.memberNames||Object.fromEntries(value.memberIds.map((id,index)=>[id,index===0?"Owner":"Member"]))});
+const normalizeSpace=(value:Space):Space=>normalizeSpaceTemplateDocument({...value,adminIds:value.adminIds||[],memberNames:value.memberNames||Object.fromEntries(value.memberIds.map((id,index)=>[id,index===0?"Owner":"Member"]))});
+const normalizeIdea=(value:Idea):Idea=>normalizeIdeaTemplateDocument(value);
 const stamp=(value:unknown)=>value&&typeof value==="object"&&"toMillis"in value?(value as Timestamp).toMillis():0;
 export function watchSpaces(uid:string,next:(items:Space[])=>void,error:(e:Error)=>void):Unsubscribe{return onSnapshot(query(collection(db,"spaces"),where("memberIds","array-contains",uid)),snapshot=>next(snapshot.docs.map(d=>normalizeSpace(item<Space>(d))).sort((a,b)=>stamp(b.updatedAt)-stamp(a.updatedAt))),error);}
-export function watchIdeas(spaceId:string,next:(items:Idea[])=>void,error:(e:Error)=>void):Unsubscribe{return onSnapshot(query(collection(db,"ideas"),where("spaceId","==",spaceId)),snapshot=>next(snapshot.docs.map(d=>item<Idea>(d)).sort((a,b)=>stamp(b.createdAt)-stamp(a.createdAt))),error);}
-export async function addSpace(input:Omit<Space,"id"|"createdAt"|"updatedAt">){return withTimeout(addDoc(collection(db,"spaces"),{...input,createdAt:serverTimestamp(),updatedAt:serverTimestamp()}),15000,"Creating Space");}
+export function watchIdeas(spaceId:string,next:(items:Idea[])=>void,error:(e:Error)=>void):Unsubscribe{return onSnapshot(query(collection(db,"ideas"),where("spaceId","==",spaceId)),snapshot=>next(snapshot.docs.map(d=>normalizeIdea(item<Idea>(d))).sort((a,b)=>stamp(b.createdAt)-stamp(a.createdAt))),error);}
+export async function addSpace(input:Omit<Space,"id"|"createdAt"|"updatedAt">,id?:string){const value={...input,createdAt:serverTimestamp(),updatedAt:serverTimestamp()};if(id){const reference=doc(db,"spaces",id);await withTimeout(setDoc(reference,value),15000,"Creating Space");return{id}}return withTimeout(addDoc(collection(db,"spaces"),value),15000,"Creating Space");}
 export async function changeSpace(id:string,patch:Partial<Space>){return withTimeout(updateDoc(doc(db,"spaces",id),{...patch,updatedAt:serverTimestamp()}),15000,"Updating Space");}
 export async function syncMemberIdentity(spaceId:string,uid:string,displayName:string){return retry(()=>withTimeout(updateDoc(doc(db,"spaces",spaceId),{["memberNames."+uid]:displayName,updatedAt:serverTimestamp()}),15000,"Updating member profile"),3);}
 export async function softDeleteSpace(id:string){const now=Date.now();return changeSpace(id,{deletedAt:Timestamp.fromMillis(now),purgeAfter:Timestamp.fromMillis(now+7*24*60*60*1000)});}
