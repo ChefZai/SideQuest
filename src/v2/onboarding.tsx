@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { ArrowRight, Check, Compass, Lightbulb, MapPin, MessageCircle, PartyPopper, Users, X } from "lucide-react";
 import type { Space } from "./domain";
+import { HELP_ARTICLES, HELP_SECTIONS, helpArticle } from "./help-content";
+import { VersionHistory } from "./VersionHistory";
 
 export const TIP_COPY = {
   reactions: "See how everyone feels without needing a conversation right away.",
@@ -45,6 +48,7 @@ export function OnboardingWelcome({
           Save ideas without pressure. Share them with someone. See what excites you both.
           Make plans when the time feels right.
         </p>
+        {returning && <ul className="version-intro-list" aria-label="What is new in SideQuest"><li><b>Space templates</b><span>Begin with editable categories and optional starter Ideas.</span></li><li><b>Idea templates</b><span>Save useful details for restaurants, trips, events, hikes, gifts, and more.</span></li><li><b>Inspiration</b><span>Browse evergreen and seasonal prompts, then edit before saving.</span></li><li><b>Dynamic Ideas</b><span>Cards and details now adapt to what you are planning.</span></li></ul>}
         {invited && <p className="invite-note"><Users /> Your invitation will stay with you while you sign in and join.</p>}
         <button className="primary first-run-primary" onClick={onStart}>
           {returning ? "Continue to SideQuest" : invited ? "Join the Space" : "Start your first Space"} <ArrowRight />
@@ -122,7 +126,7 @@ export function OnboardingJoined({
         </p>
         <div className="first-run-actions">
           <button className="primary" onClick={onContinue}>Save your first Idea <ArrowRight /></button>
-          {onExplore && <button className="secondary" onClick={onExplore}>Explore shared Ideas</button>}
+          {onExplore && <button className="secondary" onClick={onExplore}>Explore this Space</button>}
         </div>
       </div>
     </main>
@@ -179,16 +183,6 @@ export function ContextTip({
   );
 }
 
-const GUIDES = [
-  ["What is a Space?", "A private home for Ideas you collect alone or with people you trust."],
-  ["Ideas", "Save inspiration now and return when the timing feels right."],
-  ["Reactions", TIP_COPY.reactions],
-  ["Planner", TIP_COPY.planner],
-  ["Map", TIP_COPY.map],
-  ["Memories", TIP_COPY.memories],
-  ["Activity", TIP_COPY.activity],
-] as const;
-
 export function HelpLearn({
   onClose,
   onReplay,
@@ -198,31 +192,27 @@ export function HelpLearn({
   onReplay: () => void;
   onReplayTips: () => void;
 }) {
+  const [openArticle, setOpenArticle] = useState("what-is-sidequest");
+  const openRelated = (id: string) => {
+    setOpenArticle(id);
+    requestAnimationFrame(() => {
+      const target = document.getElementById(`help-${id}`);
+      target?.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      target?.focus();
+    });
+  };
   return (
     <section className="modal panel help-learn" aria-labelledby="help-title">
       <header>
-        <div>
-          <p className="eyebrow">Help &amp; Learn</p>
-          <h2 id="help-title">SideQuest, at your pace.</h2>
-          <p>Short guides for collecting possibilities, sharing them, and making them real.</p>
-        </div>
+        <div><p className="eyebrow">Help &amp; Learn</p><h2 id="help-title">SideQuest, at your pace.</h2><p>Short guides for collecting possibilities, sharing them, and making them real.</p></div>
         <button className="icon" aria-label="Close Help and Learn" onClick={onClose}><X /></button>
       </header>
-      <div className="help-grid">
-        {GUIDES.map(([title, copy], index) => (
-          <details key={title}>
-            <summary>
-              <span>{index === 0 ? <Compass /> : index === 2 ? <MessageCircle /> : index === 4 ? <MapPin /> : <Check />}</span>
-              <b>{title}</b>
-            </summary>
-            <p>{copy}</p>
-          </details>
-        ))}
+      <nav className="help-section-links" aria-label="Help topics">{HELP_SECTIONS.map(section=><a key={section} href={`#help-section-${section.toLowerCase().replaceAll(" ","-")}`}>{section}</a>)}</nav>
+      <div className="help-articles">
+        {HELP_SECTIONS.map(section=><section key={section} id={`help-section-${section.toLowerCase().replaceAll(" ","-")}`}><h3>{section}</h3><div className="help-grid">{HELP_ARTICLES.filter(article=>article.section===section).map(article=><details id={`help-${article.id}`} tabIndex={-1} key={article.id} open={openArticle===article.id} onToggle={event=>{if(event.currentTarget.open)setOpenArticle(article.id);else if(openArticle===article.id)setOpenArticle("")}}><summary><span>{section==="Start here"?<Compass/>:section==="Troubleshooting"?<MessageCircle/>:section==="Version 0.4"?<Lightbulb/>:section==="Core features"?<Check/>:<Users/>}</span><span><b>{article.title}</b><small>{article.summary}</small></span></summary><div className="help-article-body"><p>{article.summary}</p>{article.steps&&<ol>{article.steps.map(step=><li key={step}>{step}</li>)}</ol>}{article.tip&&<aside><Lightbulb aria-hidden="true"/><span>{article.tip}</span></aside>}{article.related&&article.related.length>0&&<div className="related-guides"><small>Related guides</small>{article.related.map(id=>{const related=helpArticle(id);return related?<button type="button" className="link" key={id} onClick={()=>openRelated(id)}>{related.title}</button>:null})}</div>}</div></details>)}</div></section>)}
       </div>
-      <div className="help-replay">
-        <button className="secondary" onClick={onReplay}>Take the first-run guide again</button>
-        <button className="link" onClick={onReplayTips}>Replay contextual tips</button>
-      </div>
+      <VersionHistory />
+      <div className="help-replay"><button className="secondary" onClick={onReplay}>Replay the Version 0.4 introduction</button><button className="link" onClick={onReplayTips}>Replay contextual tips</button></div>
     </section>
   );
 }

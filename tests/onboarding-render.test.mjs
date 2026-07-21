@@ -84,7 +84,7 @@ test("invited members can add or react to shared Ideas", () => {
   }));
   assert.match(markup, /You joined Summer Ideas/);
   assert.match(markup, /Save your first Idea/);
-  assert.match(markup, /Explore shared Ideas/);
+  assert.match(markup, /Explore this Space/);
 });
 
 test("first-Idea success and contextual education render accessibly", () => {
@@ -111,7 +111,7 @@ test("Help can replay onboarding and contextual tips", () => {
     onReplay() {},
     onReplayTips() {},
   }));
-  assert.match(markup, /Take the first-run guide again/);
+  assert.match(markup, /Replay the Version 0.4 introduction/);
   assert.match(markup, /Replay contextual tips/);
   assert.match(markup, /Help &amp; Learn/);
 });
@@ -196,6 +196,10 @@ test("completed accounts see each onboarding introduction version once", () => {
   );
   assert.equal(
     onboardingState.shouldShowOnboardingIntroduction({ ...completed, version: 2 }),
+    true,
+  );
+  assert.equal(
+    onboardingState.shouldShowOnboardingIntroduction({ ...completed, version: 3 }),
     false,
   );
   assert.equal(
@@ -215,6 +219,8 @@ test("returning-user introduction does not restart first-run creation", () => {
 
   assert.match(markup, /Continue to SideQuest/);
   assert.match(markup, /Skip introduction/);
+  assert.match(markup, /Space templates/);
+  assert.match(markup, /Inspiration/);
   assert.doesNotMatch(markup, /Start your first Space/);
   assert.doesNotMatch(markup, /Onboarding step 1 of 5/);
 });

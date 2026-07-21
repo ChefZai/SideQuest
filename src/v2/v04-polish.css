@@ -1,0 +1,12 @@
+/* Version 0.4 surface polish: interactive clarity, responsive stability, and calm motion. */
+.inspiration-card,.seasonal-card,.season-selector button,.version-entry summary{transition:border-color 180ms ease,box-shadow 180ms ease,background-color 180ms ease,transform 180ms ease}
+.inspiration-card:hover,.seasonal-card:hover{border-color:#91c9ba;box-shadow:0 12px 30px #38534a12;transform:translateY(-1px)}
+.inspiration-card:focus-visible,.seasonal-card:focus-visible,.season-selector button:focus-visible,.version-entry summary:focus-visible{outline:3px solid #08776555;outline-offset:3px}
+.season-selector button:hover{border-color:var(--sq-teal-deep)}.version-entry summary:hover{background:var(--sq-soft)}
+.inspiration-scroll,.seasonal-cards{scrollbar-width:thin;scrollbar-color:#9ccbc0 transparent}
+.inspiration-card h4,.seasonal-card b,.version-entry summary b{overflow-wrap:anywhere}
+@media(max-width:360px){.version-entry summary{grid-template-columns:auto minmax(0,1fr)}.version-entry summary em{grid-column:2;justify-self:start}.inspiration{padding-inline:14px}.inspiration-card{min-width:min(84vw,268px)}.seasonal-card{min-width:min(82vw,260px)}}
+@media(max-height:620px){.space-template-creator,.idea-template-picker,.onboarding-idea-shell{max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}}
+@media(prefers-reduced-motion:reduce){.inspiration-card,.seasonal-card,.season-selector button,.version-entry summary{transition:none}.inspiration-card:hover,.seasonal-card:hover{transform:none}}
+.deferred-loading{min-height:88px;display:flex;align-items:center;justify-content:center;gap:9px;color:var(--sq-muted);font-size:13px}.deferred-loading svg{width:18px;height:18px;animation:deferred-spin 850ms linear infinite}@keyframes deferred-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.deferred-loading svg{animation:none}}

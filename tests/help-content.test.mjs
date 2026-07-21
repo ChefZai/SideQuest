@@ -1,0 +1,11 @@
+import { after, before, test } from "node:test";
+import assert from "node:assert/strict";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { createServer } from "vite";
+let server,content,ui;
+before(async()=>{server=await createServer({server:{middlewareMode:true},appType:"custom",logLevel:"silent"});content=await server.ssrLoadModule("/src/v2/help-content.ts");ui=await server.ssrLoadModule("/src/v2/onboarding.tsx")});after(async()=>server?.close());
+test("Version 0.4 Help includes every required task-oriented article",()=>{const titles=content.HELP_ARTICLES.map(x=>x.title);for(const title of["What are Space templates?","Choosing a Space type","Starter categories","Starter Ideas","Creating a Blank Space","What are Idea templates?","Choosing an Idea type","Changing an Idea template","Template-specific details","Inspiration suggestions","Seasonal Inspiration","Editing starter content","Deleting starter content","Existing Spaces and Ideas","Template privacy","Replay the Version 0.4 introduction"])assert.ok(titles.includes(title),title)});
+test("existing Help topics remain available",()=>{const titles=content.HELP_ARTICLES.map(x=>x.title);for(const title of["What is a Space?","Reactions","Comments","Planner","Map","Memories","Activity","Custom categories","Custom reactions"])assert.ok(titles.includes(title),title)});
+test("related guides resolve to real articles",()=>{for(const article of content.HELP_ARTICLES)for(const id of article.related||[])assert.ok(content.helpArticle(id),`${article.id} -> ${id}`)});
+test("Help renders accessible expandable articles and replay controls",()=>{const markup=renderToStaticMarkup(React.createElement(ui.HelpLearn,{onClose(){},onReplay(){},onReplayTips(){}}));assert.match(markup,/Help &amp; Learn/);assert.match(markup,/Replay the Version 0.4 introduction/);assert.match(markup,/details/);assert.match(markup,/Related guides/)});

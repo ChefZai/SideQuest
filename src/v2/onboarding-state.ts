@@ -1,6 +1,6 @@
 import type { CategoryDefinition, IdeaRecord, OnboardingState } from "../types/domain";
 
-export const CURRENT_ONBOARDING_VERSION = 2;
+export const CURRENT_ONBOARDING_VERSION = 3;
 
 export function normalizeOnboardingState(
   saved: unknown,
