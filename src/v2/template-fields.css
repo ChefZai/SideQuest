@@ -1,0 +1,27 @@
+.template-fields { padding: 16px; display: grid; gap: 13px; background: var(--sq-sky-tint); border: 1px solid #c8e5ef; border-radius: 18px; }
+.template-fields > header { display: flex; align-items: end; justify-content: space-between; gap: 14px; }
+.template-fields > header > div { display: flex; align-items: center; gap: 10px; }
+.template-fields > header > div > span { width: 42px; height: 42px; display: grid; place-items: center; font-size: 23px; background: #fff; border-radius: 14px; }
+.template-fields > header small { color: var(--sq-muted); font-size: 12px; }
+.template-fields > header h3 { margin: 1px 0 0; font: 650 19px/1.2 Fraunces, Georgia, serif; }
+.template-fields > header label { min-width: 190px; font-size: 12px; }
+.template-fields > header select { min-height: 44px; background: #fff; }
+.template-field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.template-field { min-width: 0; }
+.template-field input, .template-field textarea { min-height: 44px; background: #fff; }
+.template-field textarea { min-height: 84px; resize: vertical; }
+.template-field-error { color: var(--sq-error); font-size: 12px; }
+.template-fields details { border-top: 1px solid #c8e5ef; }
+.template-fields summary { min-height: 44px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: 650; }
+.template-fields summary svg { width: 18px; }
+.template-custom-note { margin: 0; color: var(--sq-muted); font-size: 13px; }
+
+@media (max-width: 600px) {
+  .template-fields > header { align-items: stretch; flex-direction: column; }
+  .template-fields > header label { min-width: 0; }
+  .template-field-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 340px) {
+  .template-fields { padding: 13px 10px; }
+}
