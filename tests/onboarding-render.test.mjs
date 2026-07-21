@@ -6,6 +6,8 @@ import { createServer } from "vite";
 
 let server;
 let ui;
+let onboardingState;
+let defaults;
 
 const space = {
   id: "space-one",
@@ -29,6 +31,8 @@ before(async () => {
     logLevel: "silent",
   });
   ui = await server.ssrLoadModule("/src/v2/onboarding.tsx");
+  onboardingState = await server.ssrLoadModule("/src/v2/onboarding-state.ts");
+  defaults = await server.ssrLoadModule("/src/config/defaults.ts");
 });
 
 after(async () => {
@@ -110,4 +114,107 @@ test("Help can replay onboarding and contextual tips", () => {
   assert.match(markup, /Take the first-run guide again/);
   assert.match(markup, /Replay contextual tips/);
   assert.match(markup, /Help &amp; Learn/);
+});
+test("first-run Spaces provide usable default categories", () => {
+  const seeded = onboardingState.initialOnboardingCategories(true, defaults.DEFAULT_CATEGORIES);
+  assert.ok(seeded.length > 0);
+  assert.notEqual(seeded, defaults.DEFAULT_CATEGORIES);
+  assert.notEqual(seeded[0], defaults.DEFAULT_CATEGORIES[0]);
+  assert.ok(defaults.DEFAULT_CATEGORIES.every(category => category.id && category.label && category.emoji));
+});
+
+test("firstIdeaId survives onboarding state persistence", () => {
+  const restored = onboardingState.normalizeOnboardingState({
+    started: true,
+    step: "idea",
+    completed: false,
+    dismissedTips: ["map"],
+    replaying: false,
+    firstIdeaId: "first-idea-123",
+    version: 2,
+  }, {
+    started: false,
+    step: "welcome",
+    completed: false,
+    dismissedTips: [],
+  });
+
+  assert.equal(restored.firstIdeaId, "first-idea-123");
+  assert.equal(restored.version, 2);
+  assert.equal(restored.step, "idea");
+  assert.deepEqual(restored.dismissedTips, ["map"]);
+});
+
+test("first-Idea retries reuse one stable ID", () => {
+  let generated = 0;
+  const interrupted = {
+    started: true,
+    step: "idea",
+    completed: false,
+    dismissedTips: [],
+    firstIdeaId: "stable-first-idea",
+  };
+  const id = onboardingState.ensureFirstIdeaId(interrupted, () => {
+    generated += 1;
+    return "duplicate-id";
+  });
+
+  assert.equal(id, "stable-first-idea");
+  assert.equal(generated, 0);
+});
+
+test("interrupted onboarding recognizes the already-saved first Idea", () => {
+  const interrupted = {
+    started: true,
+    step: "idea",
+    completed: false,
+    dismissedTips: [],
+    firstIdeaId: "saved-first-idea",
+  };
+
+  assert.equal(
+    onboardingState.hasPersistedFirstIdea(interrupted, [{ id: "saved-first-idea" }]),
+    true,
+  );
+  assert.equal(
+    onboardingState.hasPersistedFirstIdea(interrupted, [{ id: "another-idea" }]),
+    false,
+  );
+});
+test("completed accounts see each onboarding introduction version once", () => {
+  const completed = {
+    started: true,
+    step: "complete",
+    completed: true,
+    dismissedTips: [],
+  };
+
+  assert.equal(onboardingState.shouldShowOnboardingIntroduction(completed), true);
+  assert.equal(
+    onboardingState.shouldShowOnboardingIntroduction({ ...completed, version: 1 }),
+    true,
+  );
+  assert.equal(
+    onboardingState.shouldShowOnboardingIntroduction({ ...completed, version: 2 }),
+    false,
+  );
+  assert.equal(
+    onboardingState.shouldShowOnboardingIntroduction({ ...completed, completed: false }),
+    false,
+  );
+});
+
+test("returning-user introduction does not restart first-run creation", () => {
+  const markup = render(React.createElement(ui.OnboardingWelcome, {
+    name: "Isaiah",
+    invited: false,
+    returning: true,
+    onStart() {},
+    onDismiss() {},
+  }));
+
+  assert.match(markup, /Continue to SideQuest/);
+  assert.match(markup, /Skip introduction/);
+  assert.doesNotMatch(markup, /Start your first Space/);
+  assert.doesNotMatch(markup, /Onboarding step 1 of 5/);
 });

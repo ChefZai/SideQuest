@@ -75,6 +75,28 @@
 .first-run-actions svg { width: 18px; }
 .first-run-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+/* Every first-run control remains comfortably operable by touch and keyboard. */
+.first-run button,
+.first-run input,
+.first-run textarea,
+.first-run select,
+.onboarding-create button,
+.onboarding-create input,
+.onboarding-create textarea,
+.onboarding-create select,
+.onboarding-idea-shell button,
+.onboarding-idea-shell input,
+.onboarding-idea-shell textarea,
+.onboarding-idea-shell select {
+  min-height: 44px;
+}
+
+.first-run .icon,
+.onboarding-create .icon,
+.onboarding-idea-shell .icon {
+  min-width: 44px;
+}
+
 .onboarding-progress {
   width: 100%;
   display: grid;

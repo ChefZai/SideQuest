@@ -14,12 +14,14 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import type { OnboardingState, UserProfile } from "../types/domain";
+import { CURRENT_ONBOARDING_VERSION, normalizeOnboardingState } from "../v2/onboarding-state";
 
 export const NEW_USER_ONBOARDING: OnboardingState = {
   started: false,
   step: "welcome",
   completed: false,
   dismissedTips: [],
+  version: CURRENT_ONBOARDING_VERSION,
 };
 
 export const LEGACY_USER_ONBOARDING: OnboardingState = {
@@ -111,17 +113,7 @@ export async function getUserProfile(user: User): Promise<UserProfile> {
       "Explorer",
     email: user.email || "",
     photoUrl: data?.photoUrl || user.photoURL || null,
-    onboarding: savedOnboarding
-      ? {
-          started: Boolean(savedOnboarding.started),
-          step: savedOnboarding.step || "welcome",
-          completed: Boolean(savedOnboarding.completed),
-          dismissedTips: Array.isArray(savedOnboarding.dismissedTips)
-            ? savedOnboarding.dismissedTips
-            : [],
-          replaying: Boolean(savedOnboarding.replaying),
-        }
-      : LEGACY_USER_ONBOARDING,
+    onboarding: normalizeOnboardingState(savedOnboarding, LEGACY_USER_ONBOARDING),
   };
 }
 

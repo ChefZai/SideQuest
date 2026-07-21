@@ -25,17 +25,21 @@ export function OnboardingWelcome({
   name,
   invited,
   onStart,
+  returning = false,
+  onDismiss,
 }: {
   name: string;
   invited: boolean;
   onStart: () => void;
+  returning?: boolean;
+  onDismiss?: () => void;
 }) {
   return (
     <main className="first-run">
       <div className="first-run-card welcome-step">
-        <StepProgress current={1} />
+        {!returning && <StepProgress current={1} />}
         <div className="first-run-mark"><Compass /></div>
-        <p className="eyebrow">Welcome, {name}</p>
+        <p className="eyebrow">{returning ? "A quick SideQuest introduction" : `Welcome, ${name}`}</p>
         <h1>{invited ? "A shared possibility is waiting for you." : "A little home for what comes next."}</h1>
         <p className="first-run-lead">
           Save ideas without pressure. Share them with someone. See what excites you both.
@@ -43,8 +47,9 @@ export function OnboardingWelcome({
         </p>
         {invited && <p className="invite-note"><Users /> Your invitation will stay with you while you sign in and join.</p>}
         <button className="primary first-run-primary" onClick={onStart}>
-          {invited ? "Join the Space" : "Start your first Space"} <ArrowRight />
+          {returning ? "Continue to SideQuest" : invited ? "Join the Space" : "Start your first Space"} <ArrowRight />
         </button>
+        {returning && onDismiss && <button className="link" onClick={onDismiss}>Skip introduction</button>}
       </div>
     </main>
   );
