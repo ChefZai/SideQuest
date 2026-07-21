@@ -1,0 +1,4 @@
+import test from "node:test";import assert from "node:assert/strict";import{SEASONAL_INSPIRATION,seasonForDate,suggestionsForSeason}from"../src/features/templates/seasonalCatalog.ts";
+test("date-based season uses a simple northern-calendar default",()=>{assert.equal(seasonForDate(new Date(2026,3,1)),"spring");assert.equal(seasonForDate(new Date(2026,6,1)),"summer");assert.equal(seasonForDate(new Date(2026,9,1)),"fall");assert.equal(seasonForDate(new Date(2026,0,1)),"winter")});
+test("all seasons include general non-holiday choices",()=>{for(const season of["spring","summer","fall","winter"]){const items=suggestionsForSeason(season);assert.ok(items.length>=6);assert.ok(items.every(item=>item.season===season))}});
+test("seasonal IDs are stable and unique",()=>assert.equal(new Set(SEASONAL_INSPIRATION.map(item=>item.id)).size,SEASONAL_INSPIRATION.length));

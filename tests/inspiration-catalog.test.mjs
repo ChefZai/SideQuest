@@ -1,0 +1,7 @@
+import { after, before, test } from "node:test";import assert from "node:assert/strict";import { createServer } from "vite";
+let server,catalog,types,registry;
+before(async()=>{server=await createServer({server:{middlewareMode:true},appType:"custom",logLevel:"silent"});catalog=await server.ssrLoadModule("/src/features/templates/inspirationCatalog.ts");types=await server.ssrLoadModule("/src/features/templates/templateValidation.ts");registry=await server.ssrLoadModule("/src/features/templates/ideaTemplates.ts")});after(async()=>server?.close());
+test("catalog contains 40 to 60 stable evergreen suggestions",()=>{assert.ok(catalog.INSPIRATION_CATALOG.length>=40&&catalog.INSPIRATION_CATALOG.length<=60);assert.equal(new Set(catalog.INSPIRATION_CATALOG.map(x=>x.id)).size,catalog.INSPIRATION_CATALOG.length)});
+test("every section returns suggestions",()=>{for(const section of catalog.INSPIRATION_SECTIONS)assert.ok(catalog.suggestionsForSection(section,"couple").length>0,section)});
+test("Space matching uses only public template metadata",()=>{const travel=catalog.suggestionsForSection("for-this-space","travel");assert.ok(travel.length);assert.ok(travel.every(x=>x.spaceTemplateIds.includes("travel")))});
+test("prefills use valid templates and sanitize safely",()=>{for(const item of catalog.INSPIRATION_CATALOG){assert.equal(registry.getIdeaTemplateDefinition(item.templateId).id,item.templateId);if(item.prefill?.templateData)assert.ok(types.sanitizeTemplateData(item.templateId,item.prefill.templateData))}});
