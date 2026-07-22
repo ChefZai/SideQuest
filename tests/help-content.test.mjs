@@ -1,5 +1,6 @@
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
@@ -9,3 +10,10 @@ test("Version 0.4 Help includes every required task-oriented article",()=>{const
 test("existing Help topics remain available",()=>{const titles=content.HELP_ARTICLES.map(x=>x.title);for(const title of["What is a Space?","Reactions","Comments","Planner","Map","Memories","Activity","Custom categories","Custom reactions"])assert.ok(titles.includes(title),title)});
 test("related guides resolve to real articles",()=>{for(const article of content.HELP_ARTICLES)for(const id of article.related||[])assert.ok(content.helpArticle(id),`${article.id} -> ${id}`)});
 test("Help renders accessible expandable articles and replay controls",()=>{const markup=renderToStaticMarkup(React.createElement(ui.HelpLearn,{onClose(){},onReplay(){},onReplayTips(){}}));assert.match(markup,/Help &amp; Learn/);assert.match(markup,/Replay the Version 0.4 introduction/);assert.match(markup,/details/);assert.match(markup,/Related guides/)});
+
+test("Help card copy keeps an unconstrained content column", async () => {
+  const css = await readFile("src/v2/onboarding.css", "utf8");
+  assert.match(css, /\.help-grid summary > span:first-child/);
+  assert.match(css, /summary>span:last-child\{width:auto;height:auto;min-width:0/);
+  assert.doesNotMatch(css, /\.help-grid summary span \{/);
+});
