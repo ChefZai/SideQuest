@@ -89,8 +89,8 @@ input::placeholder, textarea::placeholder { color: #b8ad9f; opacity: .82; }
 @media (max-width: 767px) {
   .content { padding-inline: 18px; }
   .pagehead { gap: 14px; }
-  .pagehead .primary, .pagehead > div:last-child { width: 100%; }
-  .pagehead > div:last-child > * { flex: 1; }
+  .pagehead .primary, .pagehead > div + div { width: 100%; }
+  .pagehead > div + div > * { flex: 1; }
   .category-composer { grid-template-columns: 52px minmax(0, 1fr) 44px; }
   .category-composer .primary { grid-column: 1 / 3; grid-row: 2; }
   .category-composer .icon { grid-column: 3; grid-row: 1 / 3; align-self: stretch; }
@@ -342,6 +342,8 @@ button.activity-item:focus-visible { border-radius: 12px; }
   .space-settings, .space-customizer { gap: 20px; }
   .settings-heading { align-items: stretch; flex-direction: column; gap: 12px; }
   .settings-heading .secondary { width: 100%; }
+  .member-settings .settings-heading { align-items: flex-start; flex-direction: row; }
+  .member-settings .settings-count { flex: 0 0 30px; width: 30px; }
   .settings-member { grid-template-columns: 38px minmax(0,1fr) auto; gap: 9px; }
   .member-avatar { width: 38px; height: 38px; }
   .member-permission { grid-column: 2 / -1; justify-self: start; }

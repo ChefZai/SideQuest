@@ -11,6 +11,10 @@
   --sq-shadow-hover: 0 16px 38px #38534a1c;
 }
 :where(button,a,input,textarea,select,summary,.card,.space-row,.activity-item){transition-duration:var(--sq-motion-standard);transition-timing-function:var(--sq-ease)}
+button.link,.space-switch,.segments button,.tabs button{min-height:44px}
+.memory-photo-field{display:grid;gap:7px;color:inherit;font-size:12px;font-weight:600}
+.memory-photo-field .secondary{width:100%;justify-content:flex-start;overflow:hidden}
+.memory-photo-field .secondary span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 :where(button,a,summary):focus-visible{outline:3px solid #08776580;outline-offset:3px}
 :where(button,input,textarea,select):disabled,:where(button,input,textarea,select)[aria-disabled="true"]{cursor:not-allowed;opacity:.56;box-shadow:none!important;transform:none!important}
 :where(.primary,.secondary,.danger,.icon,.chip,.nav button):not(:disabled):active{transform:translateY(1px) scale(.985)}

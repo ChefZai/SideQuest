@@ -64,7 +64,7 @@ export function IdeaCard({ idea, space, profile, onOpen }: { idea: Idea; space: 
       <span className="category-pill">{idea.categoryEmoji} {idea.category}</span>
       <div className="idea-card-title"><small>{templateId !== "custom" ? template.name : ""}</small><h2>{idea.title}</h2>{!metadata.length && <p>{idea.location || "A possibility waiting for details"}</p>}</div>
     </div>
-    {metadata.length > 0 && <div className="idea-card-metadata" aria-label="Idea details">{metadata.map(item => { const Icon = ICONS[item.icon]; return <span key={item.key} aria-label={`${item.label}: ${item.value}`}><Icon aria-hidden="true" />{item.value}</span>; })}</div>}
+    {metadata.length > 0 && <div className="idea-card-metadata" aria-label="Idea details">{metadata.map(item => { const Icon = ICONS[item.icon]; return <span key={item.key} aria-label={`${item.label}: ${item.value}`}><Icon aria-hidden="true" /><span className="idea-card-metadata-value">{item.value}</span></span>; })}</div>}
     <footer><span>Added by {idea.createdByName}</span><span>{ideaCardContext(idea, space, profile)}</span></footer>
   </button>;
 }

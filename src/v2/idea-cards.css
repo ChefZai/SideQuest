@@ -11,6 +11,8 @@
 .idea-card-title p { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .idea-card-metadata { min-height: 52px; padding: 10px 14px; display: flex; align-items: center; flex-wrap: wrap; gap: 7px 12px; background: #fff; border-top: 1px solid var(--sq-border); }
 .idea-card-metadata span { min-width: 0; display: inline-flex; align-items: center; gap: 5px; overflow: hidden; color: var(--sq-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.idea-card-metadata > span { max-width: 100%; }
+.idea-card-metadata-value { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .idea-card-metadata svg { width: 14px; height: 14px; flex: 0 0 auto; color: var(--sq-teal-deep); }
 
 @media (max-width: 430px) {
