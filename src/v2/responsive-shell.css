@@ -5,7 +5,8 @@
 }
 
 @media (min-width: 768px) {
-  html, body, #root { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }
+  html { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: auto; }
+  body, #root { height: auto; min-height: 100%; overflow: visible; overscroll-behavior: auto; }
   body { position: static; inset: auto; }
   .shell { height: auto; min-height: 100dvh; max-height: none; overflow: visible; }
   .content { height: auto; min-height: calc(100dvh - 68px); overflow: visible; }
