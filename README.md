@@ -19,6 +19,12 @@ SideQuest is a private collaborative idea space. People collect inspiration, rea
 
 ## Local development
 
+Prerequisites:
+
+- Node.js 22 LTS
+- JDK 21 or newer (required by the Firebase emulators)
+- Firebase CLI access through the project dependency (`npx firebase`)
+
 ```powershell
 npm install
 npm run dev
@@ -38,7 +44,7 @@ npm run check
 4. From this folder, deploy the included rules:
 
 ```powershell
-firebase deploy --only firestore:rules,storage
+npx firebase deploy --only firestore:rules,storage
 ```
 
 The project is configured for Firebase project `sidequest-2e798` in `.firebaserc`.
