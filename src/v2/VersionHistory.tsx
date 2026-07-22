@@ -1,7 +1,7 @@
 import { Check, ChevronDown, Clock3, Sparkles } from "lucide-react";
 import "./version-history.css";
 
-export const VERSION_04_DEPLOYED=false;
+export const VERSION_04_DEPLOYED=true;
 export interface VersionEntry{version:string;title:string;summary:string;details:readonly string[];status:"Past"|"Current"|"Coming Soon"|"Roadmap"}
 export const VERSION_HISTORY:readonly VersionEntry[]=[
   {version:"0.1",title:"Foundation",status:"Past",summary:"Created the SideQuest concept, designed the complete product in Figma, established the core feature set and user flows, and validated the vision through an interactive prototype.",details:["Complete Figma UI/UX","Product concept and mission","Core screen architecture","Spaces, Ideas, Planner, Maps, Memories, and Activity concepts","Interactive prototype","Flow and dead-end validation"]},
