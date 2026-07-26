@@ -8,7 +8,7 @@ service firebase.storage {
     function member(spaceId) {
       return request.auth != null
         && request.auth.uid in space(spaceId).data.memberIds
-        && space(spaceId).data.deletedAt == null;
+        && (!('deletedAt' in space(spaceId).data) || space(spaceId).data.deletedAt == null);
     }
 
     function owner(spaceId) {

@@ -57,6 +57,17 @@ before(async () => {
       deletedAt: null,
       updatedAt: Timestamp.now(),
     });
+    await setDoc(doc(db, "spaces", "legacy-space"), {
+      name: "Legacy Space",
+      emoji: "✨",
+      type: "Together",
+      ownerId,
+      adminIds: [],
+      memberIds: [ownerId, memberId],
+      categories: [],
+      reactionDefs: [],
+      updatedAt: Timestamp.now(),
+    });
     await setDoc(doc(db, "invitations", inviteCode), {
       code: inviteCode,
       spaceId,
@@ -92,8 +103,7 @@ test("members can use the live array-contains Space query", async () => {
   const snapshot = await assertSucceeds(
     getDocs(query(collection(db, "spaces"), where("memberIds", "array-contains", memberId))),
   );
-  assert.equal(snapshot.docs.length, 1);
-  assert.equal(snapshot.docs[0].id, spaceId);
+  assert.deepEqual(snapshot.docs.map(item => item.id).sort(), ["legacy-space", spaceId]);
 });
 
 test("members can synchronize only their own display name", async () => {
@@ -234,6 +244,13 @@ test("onboarding state is private to its user", async () => {
     onboarding: { ...profile.onboarding, completed: true },
   }));
 });
+test("Storage accepts members of legacy Spaces without deletedAt", async () => {
+  const memberStorage = env.authenticatedContext(memberId).storage();
+  const path = "spaces/legacy-space/ideas/legacy-idea/" + memberId + "/photo.jpg";
+  const image = new Uint8Array([255, 216, 255, 217]);
+  await assertSucceeds(uploadBytes(ref(memberStorage, path), image, { contentType: "image/jpeg" }));
+});
+
 test("Storage allows members and blocks outsiders", async () => {
   const memberStorage = env.authenticatedContext(memberId).storage();
   const outsiderStorage = env.authenticatedContext(outsiderId).storage();
