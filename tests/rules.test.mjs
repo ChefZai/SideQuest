@@ -68,7 +68,22 @@ before(async () => {
       reactionDefs: [],
       updatedAt: Timestamp.now(),
     });
-    await setDoc(doc(db, "invitations", inviteCode), {
+    await setDoc(doc(db, "spaces", "legacy-flag-space"), {
+      name: "Legacy Flag Space",
+      ownerId,
+      adminIds: [],
+      memberIds: [ownerId],
+      deletedAt: false,
+      updatedAt: Timestamp.now(),
+    });
+    await setDoc(doc(db, "spaces", "deleted-space"), {
+      name: "Deleted Space",
+      ownerId,
+      adminIds: [],
+      memberIds: [ownerId],
+      deletedAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    });    await setDoc(doc(db, "invitations", inviteCode), {
       code: inviteCode,
       spaceId,
       spaceName: "Private Space",
@@ -251,6 +266,20 @@ test("Storage accepts members of legacy Spaces without deletedAt", async () => {
   await assertSucceeds(uploadBytes(ref(memberStorage, path), image, { contentType: "image/jpeg" }));
 });
 
+test("Storage accepts legacy flags and blocks timestamp-deleted Spaces", async () => {
+  const ownerStorage = env.authenticatedContext(ownerId).storage();
+  const image = new Uint8Array([255, 216, 255, 217]);
+  await assertSucceeds(uploadBytes(
+    ref(ownerStorage, "spaces/legacy-flag-space/ideas/legacy-idea/" + ownerId + "/photo.jpg"),
+    image,
+    { contentType: "image/jpeg" },
+  ));
+  await assertFails(uploadBytes(
+    ref(ownerStorage, "spaces/deleted-space/ideas/deleted-idea/" + ownerId + "/photo.jpg"),
+    image,
+    { contentType: "image/jpeg" },
+  ));
+});
 test("Storage allows members and blocks outsiders", async () => {
   const memberStorage = env.authenticatedContext(memberId).storage();
   const outsiderStorage = env.authenticatedContext(outsiderId).storage();
