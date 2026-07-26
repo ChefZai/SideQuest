@@ -17,6 +17,20 @@ const canvasBlob=(canvas:HTMLCanvasElement,quality:number)=>new Promise<Blob>((r
   canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Could not compress this photo.")),"image/jpeg",quality);
 });
 
+export function compressionDimensions(sourceWidth:number,sourceHeight:number,maxDimension=1600):number[]{
+  const sourceDimension=Math.max(sourceWidth,sourceHeight);
+  if(!Number.isFinite(sourceDimension)||sourceDimension<=0)return[];
+  const floor=Math.min(640,sourceDimension);
+  const dimensions:number[]=[];
+  let dimension=Math.min(maxDimension,sourceDimension);
+  while(dimension>=floor){
+    dimensions.push(dimension);
+    if(dimension===floor)break;
+    dimension=Math.max(floor,Math.floor(dimension*.8));
+  }
+  return dimensions;
+}
+
 export async function compressImage(file:File,maxDimension=1600,targetBytes=700_000):Promise<File>{
   if(!file.type.startsWith("image/"))throw new Error("Choose an image file.");
   let source:ImageBitmap|HTMLImageElement;
@@ -26,9 +40,8 @@ export async function compressImage(file:File,maxDimension=1600,targetBytes=700_
   const canvas=document.createElement("canvas");
   const context=canvas.getContext("2d");
   if(!context)throw new Error("Image processing is unavailable in this browser.");
-  let dimension=Math.min(maxDimension,Math.max(sourceWidth,sourceHeight));
   let blob:Blob|null=null;
-  while(dimension>=640){
+  for(const dimension of compressionDimensions(sourceWidth,sourceHeight,maxDimension)){
     const ratio=Math.min(1,dimension/Math.max(sourceWidth,sourceHeight));
     canvas.width=Math.max(1,Math.round(sourceWidth*ratio));
     canvas.height=Math.max(1,Math.round(sourceHeight*ratio));
@@ -36,7 +49,6 @@ export async function compressImage(file:File,maxDimension=1600,targetBytes=700_
     context.drawImage(source,0,0,canvas.width,canvas.height);
     for(let quality=.84;quality>=.44;quality-=.08){blob=await canvasBlob(canvas,quality);if(blob.size<=targetBytes)break}
     if(blob&&blob.size<=targetBytes)break;
-    dimension=Math.floor(dimension*.8);
   }
   if("close"in source&&typeof source.close==="function")source.close();
   if(!blob||blob.size>targetBytes)throw new Error("This photo is too complex to prepare safely. Try a smaller image.");
