@@ -161,6 +161,51 @@ test("members cannot rewrite Idea ownership, Space identity, or completion", asy
   await assertFails(updateDoc(doc(db, "ideas", "idea-one"), { completed: true }));
 });
 
+test("owners and authorized members can create valid Ideas that Space members can read", async () => {
+  for (const [uid, ideaId] of [[ownerId, "owner-created"], [memberId, "member-created"]]) {
+    const db = env.authenticatedContext(uid).firestore();
+    await assertSucceeds(setDoc(doc(db, "ideas", ideaId), {
+      spaceId,
+      title: "Valid Idea",
+      description: "",
+      category: "Activity",
+      categoryEmoji: "✨",
+      accent: "20,181,155",
+      location: "",
+      tags: [],
+      price: "",
+      duration: "",
+      photoUrl: "",
+      createdBy: uid,
+      createdByName: uid === ownerId ? "Owner" : "Member",
+      completed: false,
+      completionRequestedBy: [],
+      completedAt: null,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    }));
+    await assertSucceeds(getDoc(doc(env.authenticatedContext(ownerId).firestore(), "ideas", ideaId)));
+    const visible = await assertSucceeds(getDocs(query(collection(db, "ideas"), where("spaceId", "==", spaceId))));
+    assert.ok(visible.docs.some(snapshot => snapshot.id === ideaId));
+  }
+});
+
+test("outsiders and invalid Space references cannot create Ideas", async () => {
+  const outsiderDb = env.authenticatedContext(outsiderId).firestore();
+  await assertFails(setDoc(doc(outsiderDb, "ideas", "outsider-created"), {
+    spaceId,
+    title: "Blocked",
+    createdBy: outsiderId,
+    completed: false,
+  }));
+  const ownerDb = env.authenticatedContext(ownerId).firestore();
+  await assertFails(setDoc(doc(ownerDb, "ideas", "missing-space"), {
+    spaceId: "does-not-exist",
+    title: "Blocked",
+    createdBy: ownerId,
+    completed: false,
+  }));
+});
 test("the Space owner can complete an Idea", async () => {
   const db = env.authenticatedContext(ownerId).firestore();
   await assertSucceeds(updateDoc(doc(db, "ideas", "idea-one"), {
