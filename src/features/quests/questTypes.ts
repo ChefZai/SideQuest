@@ -23,6 +23,8 @@ export interface QuestMetadata {
   questType?: QuestType;
   status?: QuestStatus;
   collectionId?: string | null;
+  parentQuestId?: string | null;
+  relatedQuestIds?: string[];
 }
 
 export interface QuestTypeDefinition {
@@ -85,5 +87,11 @@ export function normalizeQuestMetadata<T extends QuestMetadata & { completed?: b
     collectionId: typeof value.collectionId === "string" && value.collectionId.trim()
       ? value.collectionId.trim()
       : null,
+    parentQuestId: typeof value.parentQuestId === "string" && value.parentQuestId.trim()
+      ? value.parentQuestId.trim()
+      : null,
+    relatedQuestIds: Array.isArray(value.relatedQuestIds)
+      ? [...new Set(value.relatedQuestIds.filter((id): id is string => typeof id === "string" && Boolean(id.trim())).map(id => id.trim()))]
+      : [],
   };
 }

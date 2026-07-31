@@ -101,7 +101,7 @@ test("living Home sections use real Moments, celebrations, and Collection summar
   }));
   for (const title of ["Continue Your Journey", "Latest Moments", "Recently Celebrated", "Collections Growing", "Dream Bigger"]) assert.match(markup, new RegExp(title));
   assert.match(markup, /National Parks/);
-  assert.match(markup, /Latest Memory/);
+  assert.match(markup, /Latest Moment/);
 });
 
 test("reflection, Memory mode, manual Moments, and Journey events remain wired", async () => {
