@@ -50,12 +50,12 @@ test("Memory mode uses nostalgic story-first hierarchy", async () => {
   assert.doesNotMatch(source, />Edit Quest</);
 });
 
-test("Collections render as living stories with intentional empty guidance", async () => {
-  const source = await readFile("src/v2/HomeQuestSections.tsx", "utf8");
-  assert.match(source, /A living Collection/);
-  assert.match(source, /Featured Quest/);
-  assert.match(source, /Latest Moment/);
-  assert.match(source, /The first Quest can begin anywhere/);
+test("Collections remain supported without competing for Home attention", async () => {
+  const home = await readFile("src/v2/HomeQuestSections.tsx", "utf8");
+  const app = await readFile("src/v2/AppV2.tsx", "utf8");
+  assert.doesNotMatch(home, /Collections Growing/);
+  assert.match(app, /questType===\"collection\"/);
+  assert.match(app, /Part of a Collection/);
 });
 
 test("destructive and empty-state language remains warm but unambiguous", async () => {

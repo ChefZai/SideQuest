@@ -37,3 +37,22 @@
 .quest-future-section p{margin:0;color:var(--sq-secondary,#65736e)}
 @media(max-width:600px){.quest-type-picker{width:100%;max-height:calc(100dvh - env(safe-area-inset-top) - 8px)}.quest-type-grid{grid-template-columns:1fr}.quest-type-option{min-height:88px}.quest-fields{grid-template-columns:1fr}.home-quest-sections{gap:28px}.home-quest-section>header{align-items:center}}
 @media(prefers-reduced-motion:reduce){.quest-type-option{transition:none}.quest-type-option:hover{transform:none}}
+
+.home-focus-sections{display:grid;gap:38px}
+.home-focus-section{display:grid;gap:15px}
+.home-focus-section>header h2{margin:2px 0 0;font:600 clamp(25px,3vw,34px)/1.1 Fraunces,serif}
+.focus-empty{display:flex;align-items:center;gap:12px;min-height:78px;padding:18px;border-radius:20px;background:color-mix(in srgb,var(--sq-soft,#f4f8f5) 78%,#fff);color:var(--sq-secondary,#65736e)}
+.focus-empty svg{flex:0 0 36px;width:36px;height:36px;padding:8px;border-radius:12px;background:var(--sq-teal-tint,#ddf5ee);color:var(--sq-primary,#087765)}
+.focus-empty p{margin:0;max-width:62ch}
+.remember-feature{display:flex;align-items:center;gap:14px;min-height:118px;padding:20px;border:0;border-radius:24px;background:#172724;color:#f9f4ea;background-size:cover;background-position:center;text-align:left;box-shadow:0 16px 38px #24332f1c}
+.remember-feature svg{width:30px;height:30px}.remember-feature span{display:grid;gap:4px}.remember-feature small{font-size:13px}.remember-feature b{font:600 23px/1.15 Fraunces,serif}
+@media(max-width:600px){.home-focus-sections{gap:30px}.remember-feature{min-height:104px}}
+
+.capture-more,.advanced-planning{border:0;border-radius:18px;background:var(--sq-soft,#f4f8f5);padding:0 14px}
+.capture-more>summary,.advanced-planning>summary{display:flex;align-items:center;min-height:48px;cursor:pointer;color:var(--sq-primary,#087765);font-weight:700}
+.capture-more:not([open])>:not(summary),.advanced-planning:not([open])>:not(summary){display:none}
+.capture-more[open],.advanced-planning[open]{padding-bottom:16px}
+.advanced-planning>.plan-section{margin-top:18px}
+.mutual-interest{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:18px;border-radius:22px;background:var(--sq-yellow-tint,#fff6d6)}
+.mutual-interest p,.mutual-interest span{margin:2px 0 0;color:var(--sq-secondary,#65736e)}.mutual-interest span{grid-column:1/-1;font-size:13px}
+@media(max-width:600px){.mutual-interest{grid-template-columns:1fr 1fr}.mutual-interest>div,.mutual-interest>span{grid-column:1/-1}}

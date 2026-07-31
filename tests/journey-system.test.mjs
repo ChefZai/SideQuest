@@ -88,7 +88,7 @@ test("Journey summaries use natural language instead of percentage-first progres
   assert.match(lines.join(" "), /began 8 days ago/);
 });
 
-test("living Home sections use real Moments, celebrations, and Collection summaries", () => {
+test("focused Home uses real shared and active Quest signals", () => {
   const collection = baseIdea({ id: "collection", title: "National Parks", questType: "collection" });
   const child = baseIdea({ id: "child", collectionId: "collection", completed: true, status: "completed" });
   const markup = renderToStaticMarkup(React.createElement(home.HomeQuestSections, {
@@ -99,9 +99,9 @@ test("living Home sections use real Moments, celebrations, and Collection summar
     onOpen() {},
     onCreate() {},
   }));
-  for (const title of ["Continue Your Journey", "Latest Moments", "Recently Celebrated", "Collections Growing", "Dream Bigger"]) assert.match(markup, new RegExp(title));
+  for (const title of ["Shared With You", "Shared Excitement", "Becoming Real"]) assert.match(markup, new RegExp(title));
   assert.match(markup, /National Parks/);
-  assert.match(markup, /Latest Moment/);
+  assert.match(markup, /Remember this/);
 });
 
 test("reflection, Memory mode, manual Moments, and Journey events remain wired", async () => {

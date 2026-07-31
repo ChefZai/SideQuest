@@ -1,8 +1,10 @@
 # SideQuest
 
-**Collect ideas today. Live them tomorrow.**
+> **Product decisions begin with [The SideQuest Constitution](./SIDEQUEST_CONSTITUTION.md).**
 
-SideQuest is a private collaborative idea space. People collect inspiration, react on their own time, discuss possibilities without pressure, and keep completed Ideas as shared memories.
+**Transform inspiration into memories.**
+
+SideQuest exists to help people build lives they'll love looking back on. It is a private place to collect possibilities, quietly share them, discover mutual excitement, make them real, and remember them forever.
 
 ## Current MVP
 

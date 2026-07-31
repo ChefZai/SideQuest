@@ -7,6 +7,7 @@ const ICONS = {
   "memory-added": Star,
   "photo-added": Image,
   "comment-added": MessageCircle,
+  "reaction-added": Sparkles,
   "milestone-reached": Star,
   "quest-completed": Check,
   "reflection-written": MessageCircle,

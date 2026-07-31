@@ -114,15 +114,15 @@ test("Home renders the Quest information architecture and warm empty states", ()
     onOpen() {},
     onCreate() {},
   }));
-  for (const heading of ["Continue Your Journey", "Latest Moments", "Recently Celebrated", "Collections Growing", "Dream Bigger"]) {
+  for (const heading of ["Shared With You", "Shared Excitement", "Becoming Real"]) {
     assert.match(markup, new RegExp(heading));
   }
-  assert.match(markup, /What have you been dreaming about lately/);
+  assert.match(markup, /See the northern lights/);
 });
 
-test("Journey presentation and status editing remain wired to existing activity", async () => {
+test("Moment architecture remains wired while global Activity is demoted", async () => {
   const source = await readFile("src/v2/AppV2.tsx", "utf8");
-  assert.match(source, /name==="activity"\?"Journey":name/);
+  assert.doesNotMatch(source, /\[\["home",Home\],\["map",MapPin\]/);
   assert.match(source, /momentType/);
   assert.match(source, /JourneyTimeline/);
   assert.match(source, /Created this Quest/);
