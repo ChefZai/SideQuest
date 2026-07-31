@@ -6,10 +6,10 @@ import { VersionHistory } from "./VersionHistory";
 
 export const TIP_COPY = {
   reactions: "See how everyone feels without needing a conversation right away.",
-  planner: "When an Idea starts feeling real, turn it into a plan.",
-  map: "Places saved to Ideas appear here.",
-  memories: "Completed SideQuests become memories you can return to.",
-  activity: "See the little ways your Spaces are moving forward.",
+  planner: "When a Quest starts feeling real, turn it into a plan.",
+  map: "Places saved to Quests appear here.",
+  memories: "Completed Journeys become memories you can return to.",
+  activity: "See the little ways your Journey is moving forward.",
 } as const;
 
 export type TipKey = keyof typeof TIP_COPY;
@@ -43,12 +43,12 @@ export function OnboardingWelcome({
         {!returning && <StepProgress current={1} />}
         <div className="first-run-mark"><Compass /></div>
         <p className="eyebrow">{returning ? "A quick SideQuest introduction" : `Welcome, ${name}`}</p>
-        <h1>{invited ? "A shared possibility is waiting for you." : "A little home for what comes next."}</h1>
+        <h1>{invited ? "A shared possibility is waiting for you." : "This is where you build your future."}</h1>
         <p className="first-run-lead">
-          Save ideas without pressure. Share them with someone. See what excites you both.
-          Make plans when the time feels right.
+          Collect inspiration. Dream together. Build momentum. Remember the moments.
+          Become the person you are trying to become.
         </p>
-        {returning && <ul className="version-intro-list" aria-label="What is new in SideQuest"><li><b>Space templates</b><span>Begin with editable categories and optional starter Ideas.</span></li><li><b>Idea templates</b><span>Save useful details for restaurants, trips, events, hikes, gifts, and more.</span></li><li><b>Inspiration</b><span>Browse evergreen and seasonal prompts, then edit before saving.</span></li><li><b>Dynamic Ideas</b><span>Cards and details now adapt to what you are planning.</span></li></ul>}
+        {returning && <ul className="version-intro-list" aria-label="What is new in SideQuest"><li><b>Space templates</b><span>Begin with editable categories and optional starter Quests.</span></li><li><b>Quest templates</b><span>Save useful details for restaurants, trips, events, hikes, gifts, and more.</span></li><li><b>Inspiration</b><span>Browse evergreen and seasonal prompts, then edit before saving.</span></li><li><b>Dynamic Quests</b><span>Cards and details now adapt to what you are planning.</span></li></ul>}
         {invited && <p className="invite-note"><Users /> Your invitation will stay with you while you sign in and join.</p>}
         <button className="primary first-run-primary" onClick={onStart}>
           {returning ? "Continue to SideQuest" : invited ? "Join the Space" : "Start your first Space"} <ArrowRight />
@@ -122,10 +122,10 @@ export function OnboardingJoined({
         <p className="eyebrow">You’re in</p>
         <h1>You joined {space.name}.</h1>
         <p className="first-run-lead">
-          This is a private place for ideas you share together. Add a possibility—or open an Idea and react when you’re ready.
+          This is a private place for ideas you share together. Add a possibility—or open a Quest and react when you’re ready.
         </p>
         <div className="first-run-actions">
-          <button className="primary" onClick={onContinue}>Save your first Idea <ArrowRight /></button>
+          <button className="primary" onClick={onContinue}>Start your first Quest <ArrowRight /></button>
           {onExplore && <button className="secondary" onClick={onExplore}>Explore this Space</button>}
         </div>
       </div>
@@ -138,8 +138,8 @@ export function OnboardingIdeaIntro({ space }: { space: Space }) {
     <div className="onboarding-idea-intro">
       <StepProgress current={4} />
       <p className="eyebrow">{space.emoji} {space.name}</p>
-      <h1>Save something you don’t want to forget.</h1>
-      <p>A restaurant, a weekend thought, a gift, a trip, or any small possibility is enough.</p>
+      <h1>Start something you want your future to hold.</h1>
+      <p>An experience, goal, journey, relationship intention, collection, or daily rhythm is enough.</p>
     </div>
   );
 }
@@ -157,8 +157,8 @@ export function OnboardingSuccess({
         <StepProgress current={5} />
         <div className="first-run-mark yellow"><PartyPopper /></div>
         <p className="eyebrow">{replaying ? "A fresh possibility" : "Your first possibility"}</p>
-        <h1>That’s your first possibility ✨</h1>
-        <p className="first-run-lead">Add more whenever inspiration hits. No planning pressure required.</p>
+        <h1>That’s your first Quest ✨</h1>
+        <p className="first-run-lead">Keep dreaming. Build momentum only when the time feels right.</p>
         <button className="primary first-run-primary" onClick={onDone}>
           See your Space <ArrowRight />
         </button>
@@ -204,7 +204,7 @@ export function HelpLearn({
   return (
     <section className="modal panel help-learn" aria-labelledby="help-title">
       <header>
-        <div><p className="eyebrow">Help &amp; Learn</p><h2 id="help-title">SideQuest, at your pace.</h2><p>Short guides for collecting possibilities, sharing them, and making them real.</p></div>
+        <div><p className="eyebrow">Help &amp; Learn</p><h2 id="help-title">SideQuest, at your pace.</h2><p>Short guides for building Quests, sharing the journey, and making your future real.</p></div>
         <button className="icon" aria-label="Close Help and Learn" onClick={onClose}><X /></button>
       </header>
       <nav className="help-section-links" aria-label="Help topics">{HELP_SECTIONS.map(section=><a key={section} href={`#help-section-${section.toLowerCase().replaceAll(" ","-")}`}>{section}</a>)}</nav>

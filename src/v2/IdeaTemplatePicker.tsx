@@ -49,12 +49,12 @@ export function IdeaTemplatePicker({ space, onSelect, onBack }: {
   const suggested = suggestedIds.map(id => IDEA_TEMPLATE_DEFINITIONS.find(template => template.id === id)!).filter(Boolean);
   return <div className="modal panel idea-template-picker" aria-labelledby="idea-template-picker-title">
     <header>
-      <button type="button" className="icon" aria-label="Back from Idea templates" onClick={onBack}><ArrowLeft /></button>
+      <button type="button" className="icon" aria-label="Back from Quest templates" onClick={onBack}><ArrowLeft /></button>
       <div><p className="eyebrow">{space.emoji} {space.name}</p><h2 id="idea-template-picker-title">What are you thinking?</h2><p>Start with a template or create something completely custom.</p></div>
-      <button type="button" className="icon" aria-label="Close Idea template picker" onClick={onBack}><X /></button>
+      <button type="button" className="icon" aria-label="Close Quest template picker" onClick={onBack}><X /></button>
     </header>
     <TemplateSection title="Popular" copy="Easy places to begin when inspiration just arrived." templates={popular} onSelect={onSelect} />
     <TemplateSection title="Suggested for this Space" copy={`Starting points that fit ${space.name}. These are template suggestions, not personal recommendations.`} templates={suggested} onSelect={onSelect} />
-    <TemplateSection title="All templates" copy="Every available shape, including a completely open Idea." templates={[...IDEA_TEMPLATE_DEFINITIONS]} onSelect={onSelect} />
+    <TemplateSection title="All templates" copy="Every available shape, including a completely open Quest." templates={[...IDEA_TEMPLATE_DEFINITIONS]} onSelect={onSelect} />
   </div>;
 }

@@ -47,7 +47,7 @@ test("ordinary and invited Welcome states explain the product", () => {
     invited: false,
     onStart() {},
   }));
-  assert.match(ordinary, /Save ideas without pressure/);
+  assert.match(ordinary, /Collect inspiration/);
   assert.match(ordinary, /Start your first Space/);
 
   const invited = render(React.createElement(ui.OnboardingWelcome, {
@@ -83,7 +83,7 @@ test("invited members can add or react to shared Ideas", () => {
     onExplore() {},
   }));
   assert.match(markup, /You joined Summer Ideas/);
-  assert.match(markup, /Save your first Idea/);
+  assert.match(markup, /Start your first Quest/);
   assert.match(markup, /Explore this Space/);
 });
 
@@ -92,8 +92,8 @@ test("first-Idea success and contextual education render accessibly", () => {
     replaying: false,
     onDone() {},
   }));
-  assert.match(success, /That’s your first possibility/);
-  assert.match(success, /No planning pressure required/);
+  assert.match(success, /That’s your first Quest/);
+  assert.match(success, /Build momentum only when the time feels right/);
 
   for (const tip of Object.keys(ui.TIP_COPY)) {
     const markup = render(React.createElement(ui.ContextTip, {

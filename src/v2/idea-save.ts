@@ -37,9 +37,9 @@ export function sanitizeIdeaCreateInput(input: IdeaCreateInput): IdeaCreateInput
   clean.createdByName = clean.createdByName?.trim();
   clean.category = clean.category?.trim();
 
-  if (!clean.spaceId) throw new IdeaSaveError("validation", "Choose a Space before saving this Idea.");
-  if (!clean.title) throw new IdeaSaveError("validation", "Give this Idea a title.");
-  if (!clean.createdBy) throw new IdeaSaveError("validation", "Sign in again before saving this Idea.");
+  if (!clean.spaceId) throw new IdeaSaveError("validation", "Choose a Space before saving this Quest.");
+  if (!clean.title) throw new IdeaSaveError("validation", "Give this Quest a title.");
+  if (!clean.createdBy) throw new IdeaSaveError("validation", "Sign in again before saving this Quest.");
   if (!clean.category) throw new IdeaSaveError("validation", "Choose a category.");
   return clean;
 }
@@ -74,7 +74,7 @@ export async function runIdeaCreate({
       const result = await write({ ...clean, photoUrl }, id);
       return { id: result.id, photoUrl };
     } catch (cause) {
-      throw new IdeaSaveError("write", "We could not save this Idea. Your draft is still here.", cause);
+      throw new IdeaSaveError("write", "We could not save this Quest. Your draft is still here.", cause);
     }
   } catch (error) {
     if (uploadedUrl) await cleanup(uploadedUrl).catch(() => undefined);
@@ -86,8 +86,8 @@ export function ideaSaveMessage(error: unknown, online = true): string {
   const cause = error instanceof IdeaSaveError ? error.cause : error;
   const code = typeof cause === "object" && cause && "code" in cause ? String(cause.code) : "";
   if (code.includes("permission-denied") || code.includes("storage/unauthorized")) {
-    return "You no longer have permission to add Ideas to this Space.";
+    return "You no longer have permission to add Quests to this Space.";
   }
   if (error instanceof IdeaSaveError) return error.message;
-  return "We could not save this Idea. Your draft is still here.";
+  return "We could not save this Quest. Your draft is still here.";
 }

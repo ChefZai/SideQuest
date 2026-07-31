@@ -4,11 +4,12 @@ import{db,storage}from"../firebase";
 import{compressImage}from"./images";
 import{retry,withTimeout}from"./reliability";
 import{normalizeIdeaTemplateDocument,normalizeSpaceTemplateDocument}from"../features/templates/templateValidation";
+import{normalizeQuestMetadata}from"../features/quests/questTypes";
 import{sanitizeIdeaCreateInput}from"./idea-save";
 import type{ActivityItem,Comment,Idea,Memory,Plan,Reaction,Reflection,Space}from"./domain";
 const item=<T>(snap:{id:string;data:()=>unknown})=>({id:snap.id,...(snap.data()as object)})as T;
 const normalizeSpace=(value:Space):Space=>normalizeSpaceTemplateDocument({...value,adminIds:value.adminIds||[],memberNames:value.memberNames||Object.fromEntries(value.memberIds.map((id,index)=>[id,index===0?"Owner":"Member"]))});
-const normalizeIdea=(value:Idea):Idea=>normalizeIdeaTemplateDocument(value);
+const normalizeIdea=(value:Idea):Idea=>normalizeQuestMetadata(normalizeIdeaTemplateDocument(value));
 const stamp=(value:unknown)=>value&&typeof value==="object"&&"toMillis"in value?(value as Timestamp).toMillis():0;
 export function watchSpaces(uid:string,next:(items:Space[])=>void,error:(e:Error)=>void):Unsubscribe{return onSnapshot(query(collection(db,"spaces"),where("memberIds","array-contains",uid)),snapshot=>next(snapshot.docs.map(d=>normalizeSpace(item<Space>(d))).sort((a,b)=>stamp(b.updatedAt)-stamp(a.updatedAt))),error);}
 export function watchIdeas(spaceId:string,next:(items:Idea[])=>void,error:(e:Error)=>void):Unsubscribe{return onSnapshot(query(collection(db,"ideas"),where("spaceId","==",spaceId)),snapshot=>next(snapshot.docs.map(d=>normalizeIdea(item<Idea>(d))).sort((a,b)=>stamp(b.createdAt)-stamp(a.createdAt))),error);}
@@ -18,7 +19,7 @@ export async function syncMemberIdentity(spaceId:string,uid:string,displayName:s
 export async function softDeleteSpace(id:string){const now=Date.now();return changeSpace(id,{deletedAt:Timestamp.fromMillis(now),purgeAfter:Timestamp.fromMillis(now+7*24*60*60*1000)});}
 export async function restoreSpace(id:string){return changeSpace(id,{deletedAt:null,purgeAfter:null});}
 export async function addIdea(input:Omit<Idea,"id"|"createdAt"|"updatedAt">,id:string=crypto.randomUUID()){const reference=doc(db,"ideas",id);const clean=sanitizeIdeaCreateInput(input);await withTimeout(setDoc(reference,{...clean,createdAt:serverTimestamp(),updatedAt:serverTimestamp()}),15000,"Saving Idea");return{id};}
-export async function changeIdea(id:string,patch:Partial<Idea>){const clean:Record<string,unknown>=Object.fromEntries(Object.entries(patch).filter(([,v])=>v!==undefined));if(patch.completed===true&&!patch.completedAt)clean.completedAt=serverTimestamp();return withTimeout(updateDoc(doc(db,"ideas",id),{...clean,updatedAt:serverTimestamp()}),15000,"Updating Idea");}
+export async function changeIdea(id:string,patch:Partial<Idea>){const clean:Record<string,unknown>=Object.fromEntries(Object.entries(patch).filter(([,v])=>v!==undefined));if(patch.completed===true&&!patch.completedAt){clean.completedAt=serverTimestamp();clean.status="completed"}return withTimeout(updateDoc(doc(db,"ideas",id),{...clean,updatedAt:serverTimestamp()}),15000,"Updating Quest");}
 export async function deleteIdea(id:string){return withTimeout(deleteDoc(doc(db,"ideas",id)),15000,"Deleting Idea");}
 export function watchPlan(ideaId:string,next:(plan:Plan|null)=>void,error:(e:Error)=>void=()=>undefined):Unsubscribe{return onSnapshot(doc(db,"plans",ideaId),snapshot=>next(snapshot.exists()?item<Plan>(snapshot):null),error);}
 export async function ensurePlan(plan:Plan){const reference=doc(db,"plans",plan.id);await withTimeout(runTransaction(db,async transaction=>{if((await transaction.get(reference)).exists())return;const{id,...value}=plan;transaction.set(reference,{...value,updatedAt:serverTimestamp()});}),15000,"Opening plan");}

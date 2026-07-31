@@ -2,6 +2,7 @@ import { CalendarDays, DollarSign, MapPin, Ticket, Users } from "lucide-react";
 import { getIdeaTemplateDefinition } from "../features/templates/ideaTemplates";
 import { resolveIdeaTemplateId, sanitizeTemplateData } from "../features/templates/templateValidation";
 import type { IdeaTemplateId } from "../features/templates/templateTypes";
+import { QUEST_STATUS_LABELS, questTypeDefinition, resolveQuestStatus } from "../features/quests/questTypes";
 import type { UserProfile } from "../types/domain";
 import type { Idea, Space } from "./domain";
 import "./idea-cards.css";
@@ -57,14 +58,17 @@ export function IdeaCard({ idea, space, profile, onOpen }: { idea: Idea; space: 
   const templateId: IdeaTemplateId = resolveIdeaTemplateId(idea);
   const template = getIdeaTemplateDefinition(templateId);
   const metadata = ideaCardMetadata(idea);
-  return <button className={`card idea-card template-${templateId}${idea.photoUrl ? " has-image" : " no-image"}`} onClick={onOpen} aria-label={`Open ${idea.title}. ${template.name} Idea.`}>
+  const questType = questTypeDefinition(idea.questType);
+  const questStatus = resolveQuestStatus(idea.status, idea.completed);
+  return <button className={`card idea-card template-${templateId}${idea.photoUrl ? " has-image" : " no-image"}`} onClick={onOpen} aria-label={`Open ${idea.title}. ${questType.label} Quest.`}>
     <div className="cover" style={idea.photoUrl ? { backgroundImage: `linear-gradient(0deg,#111 0%,transparent 80%),url(${idea.photoUrl})` } : undefined}>
+      <div className="idea-card-quest-meta"><span className="quest-type-chip" style={{"--quest-accent":questType.accent} as React.CSSProperties}>{questType.emoji} {questType.label}</span><span className="quest-status-chip">{QUEST_STATUS_LABELS[questStatus]}</span>{idea.collectionId&&<span className="collection-badge">Collection</span>}</div>
       {!idea.photoUrl && <span className="idea-card-fallback" aria-hidden="true">{template.emoji}</span>}
       <span className="space-mark" aria-label={`Space: ${space.name}`}>{space.emoji}</span>
       <span className="category-pill">{idea.categoryEmoji} {idea.category}</span>
       <div className="idea-card-title"><small>{templateId !== "custom" ? template.name : ""}</small><h2>{idea.title}</h2>{!metadata.length && <p>{idea.location || "A possibility waiting for details"}</p>}</div>
     </div>
-    {metadata.length > 0 && <div className="idea-card-metadata" aria-label="Idea details">{metadata.map(item => { const Icon = ICONS[item.icon]; return <span key={item.key} aria-label={`${item.label}: ${item.value}`}><Icon aria-hidden="true" /><span className="idea-card-metadata-value">{item.value}</span></span>; })}</div>}
+    {metadata.length > 0 && <div className="idea-card-metadata" aria-label="Quest details">{metadata.map(item => { const Icon = ICONS[item.icon]; return <span key={item.key} aria-label={`${item.label}: ${item.value}`}><Icon aria-hidden="true" /><span className="idea-card-metadata-value">{item.value}</span></span>; })}</div>}
     <footer><span>Added by {idea.createdByName}</span><span>{ideaCardContext(idea, space, profile)}</span></footer>
   </button>;
 }

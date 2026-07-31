@@ -29,7 +29,7 @@ test("picker renders Popular, Space suggestions, All templates, and Custom", () 
   assert.match(markup, /Suggested for this Space/);
   assert.match(markup, /All templates/);
   assert.match(markup, /Custom/);
-  assert.match(markup, /Back from Idea templates/);
+  assert.match(markup, /Back from Quest templates/);
 });
 
 test("suggestions respond to the current Space template", () => {
