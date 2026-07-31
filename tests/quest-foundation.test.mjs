@@ -114,7 +114,7 @@ test("Home renders the Quest information architecture and warm empty states", ()
     onOpen() {},
     onCreate() {},
   }));
-  for (const heading of ["Continue Your Journey", "Recently Inspired", "Collections", "Recent Quests", "Memories"]) {
+  for (const heading of ["Continue Your Journey", "Latest Moments", "Recently Celebrated", "Collections Growing", "Dream Bigger"]) {
     assert.match(markup, new RegExp(heading));
   }
   assert.match(markup, /What have you been dreaming about lately/);
@@ -123,7 +123,7 @@ test("Home renders the Quest information architecture and warm empty states", ()
 test("Journey presentation and status editing remain wired to existing activity", async () => {
   const source = await readFile("src/v2/AppV2.tsx", "utf8");
   assert.match(source, /name==="activity"\?"Journey":name/);
-  assert.match(source, /action:"changed status"/);
-  assert.match(source, /Journey Feed/);
-  assert.match(source, /Created Quest/);
+  assert.match(source, /momentType/);
+  assert.match(source, /JourneyTimeline/);
+  assert.match(source, /Created this Quest/);
 });
