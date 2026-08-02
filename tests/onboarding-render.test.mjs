@@ -111,7 +111,7 @@ test("Help can replay onboarding and contextual tips", () => {
     onReplay() {},
     onReplayTips() {},
   }));
-  assert.match(markup, /Replay the Version 0.4 introduction/);
+  assert.match(markup, /Replay templates &amp; Inspiration/);
   assert.match(markup, /Replay contextual tips/);
   assert.match(markup, /Help &amp; Learn/);
 });

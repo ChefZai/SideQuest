@@ -14,7 +14,7 @@
 .quest-fields label{margin:0}
 .quest-type-chip,.quest-status-chip,.collection-badge{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:5px 10px;border-radius:999px;font:600 12px/1 Inter,sans-serif}
 .quest-type-chip{background:var(--quest-accent,#ddf5ee);color:#24332f}
-.quest-status-chip{background:#fff6d6;color:#5d4b13}
+.quest-status-chip{flex-direction:row;background:#fff6d6;color:#5d4b13}
 .collection-badge{background:#f1eefc;color:#51488a}
 .idea-card-quest-meta{position:absolute;top:14px;left:14px;display:flex;gap:7px;flex-wrap:wrap;z-index:2}
 .idea-card .category-pill{top:54px}
@@ -27,7 +27,7 @@
 .quest-section-empty{display:flex;align-items:center;gap:12px;min-height:82px;padding:18px;border:1px dashed #c9d9d2;border-radius:18px;background:#fff9f0;color:var(--sq-secondary,#65736e)}
 .quest-section-empty span{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#ddf5ee;color:#087765}
 .quest-section-empty p{margin:0;font-size:14px}
-.quest-status-chip select{border:0;background:transparent;color:inherit;font:inherit;min-height:30px;padding:0 4px}
+.quest-status-chip select{width:auto;min-width:0;border:0;background:transparent;color:inherit;font:inherit;min-height:30px;padding:0 4px;box-shadow:none}
 .quest-detail-summary{display:grid;gap:14px;padding-bottom:18px}
 .quest-detail-labels{display:flex;gap:8px;flex-wrap:wrap}
 .quest-detail-people{display:flex;align-items:center;gap:8px;color:var(--sq-secondary,#65736e)}

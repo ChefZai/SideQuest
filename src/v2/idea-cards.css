@@ -1,4 +1,5 @@
-.idea-card { display: grid; grid-template-rows: auto auto auto; overflow: hidden; text-align: left; }
+.idea-card { width: 100%; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; overflow: hidden; text-align: left; }
+.idea-card > * { min-width: 0; width: 100%; }
 .idea-card .cover { min-height: 265px; }
 .idea-card.template-movie .cover { min-height: 300px; }
 .idea-card.no-image .cover { background: linear-gradient(145deg, var(--sq-sky-tint), var(--sq-peach-tint)); }

@@ -46,3 +46,8 @@ img{transition:opacity var(--sq-motion-emphasis) var(--sq-ease)}img[loading="laz
 .planner-list-empty span,.conversation-empty span{font-size:20px}.planner-list-empty p,.conversation-empty p{flex:1;margin:0;font-size:13px;line-height:1.45}
 
 .celebration>span svg,.activity-empty>span svg{width:23px;height:23px;color:var(--sq-teal-deep)}
+
+/* Quest-card metadata keeps a clear, non-overlapping visual hierarchy. */
+.idea-card .category-pill { top: 54px; max-width: calc(100% - 76px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The content pane owns navigation clearance; the shell itself must never become a hidden scroll container. */
+.shell { padding-bottom: 0; }
