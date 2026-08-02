@@ -3,6 +3,7 @@ import { getIdeaTemplateDefinition } from "../features/templates/ideaTemplates";
 import { resolveIdeaTemplateId, sanitizeTemplateData } from "../features/templates/templateValidation";
 import type { IdeaTemplateId } from "../features/templates/templateTypes";
 import { QUEST_STATUS_LABELS, questTypeDefinition, resolveQuestStatus } from "../features/quests/questTypes";
+import { measurableGoal, momentumSignals } from "../features/living-quests/livingQuests";
 import type { UserProfile } from "../types/domain";
 import type { Idea, Space } from "./domain";
 import "./idea-cards.css";
@@ -54,21 +55,22 @@ export function ideaCardContext(idea: Idea, space: Space, profile: UserProfile):
   return `Still waiting on ${waiting || "your people"}`;
 }
 
-export function IdeaCard({ idea, space, profile, onOpen }: { idea: Idea; space: Space; profile: UserProfile; onOpen: () => void }) {
+export function IdeaCard({ idea, space, profile, onOpen, variant = "standard" }: { idea: Idea; space: Space; profile: UserProfile; onOpen: () => void; variant?: "standard" | "compact" }) {
   const templateId: IdeaTemplateId = resolveIdeaTemplateId(idea);
   const template = getIdeaTemplateDefinition(templateId);
   const metadata = ideaCardMetadata(idea);
   const questType = questTypeDefinition(idea.questType);
   const questStatus = resolveQuestStatus(idea.status, idea.completed);
-  return <button className={`card idea-card template-${templateId}${idea.photoUrl ? " has-image" : " no-image"}`} onClick={onOpen} aria-label={`Open ${idea.title}. ${questType.label} Quest.`}>
+  const goal = measurableGoal(idea);
+  const momentum = momentumSignals(idea, [], space)[0];
+  return <button className={`card idea-card living-card ${variant} template-${templateId}${idea.photoUrl ? " has-image" : " no-image"}`} onClick={onOpen} aria-label={`Open ${idea.title}. ${questType.label} Quest.`}>
     <div className="cover" style={idea.photoUrl ? { backgroundImage: `linear-gradient(0deg,#111 0%,transparent 80%),url(${idea.photoUrl})` } : undefined}>
-      <div className="idea-card-quest-meta"><span className="quest-type-chip" style={{"--quest-accent":questType.accent} as React.CSSProperties}>{questType.emoji} {questType.label}</span><span className="quest-status-chip">{QUEST_STATUS_LABELS[questStatus]}</span>{idea.collectionId&&<span className="collection-badge">Collection</span>}</div>
+      <div className="idea-card-quest-meta"><span className="quest-type-chip" title={questType.label}>{questType.emoji}</span><span className="quest-status-chip">{QUEST_STATUS_LABELS[questStatus]}</span>{idea.collectionId&&<span className="collection-badge">Collection</span>}</div>
       {!idea.photoUrl && <span className="idea-card-fallback" aria-hidden="true">{template.emoji}</span>}
       <span className="space-mark" aria-label={`Space: ${space.name}`}>{space.emoji}</span>
-      <span className="category-pill">{idea.categoryEmoji} {idea.category}</span>
-      <div className="idea-card-title"><small>{templateId !== "custom" ? template.name : ""}</small><h2>{idea.title}</h2>{!metadata.length && <p>{idea.location || "A possibility waiting for details"}</p>}</div>
+      <div className="idea-card-title"><h2>{idea.title}</h2>{!metadata.length && <p>{idea.location || momentum.label}</p>}</div>
     </div>
-    {metadata.length > 0 && <div className="idea-card-metadata" aria-label="Quest details">{metadata.map(item => { const Icon = ICONS[item.icon]; return <span key={item.key} aria-label={`${item.label}: ${item.value}`}><Icon aria-hidden="true" /><span className="idea-card-metadata-value">{item.value}</span></span>; })}</div>}
-    <footer><span>Added by {idea.createdByName}</span><span>{ideaCardContext(idea, space, profile)}</span></footer>
+    {goal ? <div className="living-goal-progress"><div><span>{goal.current} of {goal.target} {goal.unit}</span><b>{goal.percentage}%</b></div><progress value={Math.min(goal.current,goal.target)} max={goal.target}>{goal.percentage}%</progress></div> : metadata.length > 0 && variant === "standard" ? <div className="idea-card-metadata" aria-label="Quest details">{metadata.slice(0,2).map(item => { const Icon = ICONS[item.icon]; return <span key={item.key} aria-label={`${item.label}: ${item.value}`}><Icon aria-hidden="true" /><span className="idea-card-metadata-value">{item.value}</span></span>; })}</div> : null}
+    <footer><span className="card-people">{space.memberIds.slice(0,3).map(id=><i key={id} title={space.memberNames[id]||"Member"}>{(space.memberNames[id]||"M")[0]?.toUpperCase()}</i>)}</span><span>{ideaCardContext(idea, space, profile)}</span><small>{momentum.label}</small></footer>
   </button>;
 }

@@ -1,93 +1,31 @@
 import { useEffect, useMemo, useState } from "react";
-import { Camera, MapPin, MessageCircle, Plus, Sparkles, Star, X } from "lucide-react";
+import { Check, Plus, Sparkles, X } from "lucide-react";
 import { journeySummary, orderMoments, type JourneyOrder, type MomentRecord, type MomentType } from "../features/journeys/journeyTypes";
 import type { UserProfile } from "../types/domain";
-import { addMoment, removeImage, uploadImage, watchJourney } from "./data";
+import { addMoment, completeMilestone, createMilestone, removeImage, uploadImage, watchJourney } from "./data";
 import type { Idea, Space } from "./domain";
 import { MomentCard } from "./MomentCard";
 import "./journey-system.css";
 
-const MANUAL_TYPES: { id: MomentType; label: string; emoji: string }[] = [
-  { id: "journey-update", label: "Journey Update", emoji: "✨" },
-  { id: "photo-added", label: "Photo", emoji: "📷" },
-  { id: "memory-added", label: "Memory", emoji: "💛" },
-  { id: "reflection-written", label: "Reflection", emoji: "💭" },
-  { id: "milestone-reached", label: "Milestone", emoji: "⭐" },
-  { id: "status-changed", label: "Status Change", emoji: "🧭" },
+const MANUAL_TYPES:{id:MomentType;label:string;emoji:string}[]=[
+  {id:"journey-update",label:"Journey Update",emoji:"\u2728"},{id:"photo-added",label:"Photo",emoji:"\u{1F4F7}"},{id:"memory-added",label:"Memory",emoji:"\u{1F49B}"},{id:"reflection-written",label:"Reflection",emoji:"\u{1F4AD}"},{id:"milestone-added",label:"Milestone",emoji:"\u2B50"}
 ];
+const prominent=(moment:MomentRecord)=>!["status-changed","comment-added"].includes(moment.type);
 
-export function JourneyTimeline({ quest, space, profile, compact = false }: { quest: Idea; space: Space; profile: UserProfile; compact?: boolean }) {
-  const [moments, setMoments] = useState<MomentRecord[]>([]);
-  const [order, setOrder] = useState<JourneyOrder>("newest");
-  const [creating, setCreating] = useState(false);
-  const [type, setType] = useState<MomentType>("journey-update");
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [emoji, setEmoji] = useState("✨");
-  const [file, setFile] = useState<File | null>(null);
-  const [progress, setProgress] = useState(0);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => watchJourney(quest.id, setMoments, failure => setError(failure.message)), [quest.id]);
-  const ordered = useMemo(() => orderMoments(moments, order), [moments, order]);
-  const summary = useMemo(() => journeySummary(moments, quest.createdAt, quest.completed), [moments, quest.createdAt, quest.completed]);
-
-  const save = async () => {
-    if (!description.trim()) return setError("Add a few words about this Moment.");
-    setBusy(true);
-    setError("");
-    let uploadedUrl = "";
-    try {
-      if (file) uploadedUrl = await uploadImage(space.id, "ideas", quest.id, profile.id, file, setProgress);
-      await addMoment({
-        spaceId: space.id,
-        questId: quest.id,
-        actorId: profile.id,
-        actorName: profile.displayName,
-        type,
-        title: MANUAL_TYPES.find(item => item.id === type)?.label || "Journey Update",
-        description: description.trim(),
-        location: location.trim() || undefined,
-        imageUrl: uploadedUrl || undefined,
-        isMilestone: type === "milestone-reached",
-        emoji: emoji.trim() || undefined,
-      });
-      setDescription("");
-      setLocation("");
-      setFile(null);
-      setCreating(false);
-    } catch (failure) {
-      if (uploadedUrl) void removeImage(uploadedUrl);
-      setError(failure instanceof Error ? failure.message : "This Moment could not be saved.");
-    } finally {
-      setBusy(false);
-      setProgress(0);
-    }
-  };
-
-  return (
-    <section className={compact ? "journey-timeline compact" : "journey-timeline"} aria-labelledby={`journey-${quest.id}`}>
-      <header className="journey-heading">
-        <div><p className="eyebrow">The story so far</p><h3 id={`journey-${quest.id}`}>Journey</h3></div>
-        <div className="journey-actions">
-          <label>Order<select aria-label="Journey order" value={order} onChange={event => setOrder(event.target.value as JourneyOrder)}><option value="newest">Newest first</option><option value="chronological">Beginning first</option></select></label>
-          <button className="secondary" onClick={() => setCreating(true)}><Plus />Add Moment</button>
-        </div>
-      </header>
-
-      {summary.length > 0 && <div className="quest-journey-summary">{summary.map(line => <span key={line}>{line}</span>)}</div>}
-      {creating && <div className="moment-composer">
-        <header><div><p className="eyebrow">A meaningful update</p><h4>Add a Moment</h4></div><button className="icon" aria-label="Close Moment composer" onClick={() => setCreating(false)}><X /></button></header>
-        <div className="moment-types">{MANUAL_TYPES.map(item => <button key={item.id} className={type === item.id ? "active" : ""} aria-pressed={type === item.id} onClick={() => { setType(item.id); setEmoji(item.emoji); }}>{item.emoji}<span>{item.label}</span></button>)}</div>
-        <label>What happened?<textarea value={description} onChange={event => setDescription(event.target.value)} placeholder="What made this part of the Journey worth remembering?" /></label>
-        <div className="twocol"><label>Emoji<input value={emoji} maxLength={8} onChange={event => setEmoji(event.target.value)} /></label><label>Location, if it matters<input value={location} onChange={event => setLocation(event.target.value)} /></label></div><label>Photo, if this Moment has one<input type="file" accept="image/*" onChange={event => setFile(event.target.files?.[0] || null)} /></label>
-        {error && <div className="error" role="alert">{error}</div>}
-        <button className="primary" disabled={busy} onClick={save}>{busy ? progress ? `Uploading ${progress}%…` : "Saving Moment…" : "Add to Journey"}</button>
-      </div>}
-
-      {!creating && error && <div className="error" role="alert">{error}</div>}
-      {ordered.length ? <div className="moment-list">{ordered.map(moment => <MomentCard key={moment.id} moment={moment} />)}</div> : <div className="journey-empty"><Sparkles aria-hidden="true" /><h4>This Journey is ready for its first Moment.</h4><p>Notice the small wins, meaningful changes, and memories as they happen.</p><button className="secondary" onClick={() => setCreating(true)}>Add the first Moment</button></div>}
-    </section>
-  );
+export function JourneyTimeline({quest,space,profile,compact=false}:{quest:Idea;space:Space;profile:UserProfile;compact?:boolean}){
+  const[moments,setMoments]=useState<MomentRecord[]>([]),[order,setOrder]=useState<JourneyOrder>("newest"),[creating,setCreating]=useState(false),[type,setType]=useState<MomentType>("journey-update"),[title,setTitle]=useState(""),[description,setDescription]=useState(""),[date,setDate]=useState(""),[location,setLocation]=useState(""),[emoji,setEmoji]=useState("\u2728"),[file,setFile]=useState<File|null>(null),[progress,setProgress]=useState(0),[busy,setBusy]=useState(false),[error,setError]=useState(""),[milestoneFilter,setMilestoneFilter]=useState<"all"|"upcoming"|"completed">("all");
+  useEffect(()=>watchJourney(space.id,quest.id,setMoments,failure=>setError(failure.message)),[space.id,quest.id]);
+  const ordered=useMemo(()=>orderMoments(moments.filter(prominent),order),[moments,order]);
+  const milestones=useMemo(()=>orderMoments(moments.filter(moment=>moment.isMilestone)).filter(moment=>milestoneFilter==="all"||(milestoneFilter==="completed"?moment.milestoneStatus==="completed":moment.milestoneStatus!=="completed")),[moments,milestoneFilter]);
+  const summary=useMemo(()=>journeySummary(moments,quest.createdAt,quest.completed),[moments,quest.createdAt,quest.completed]);
+  const reset=()=>{setTitle("");setDescription("");setDate("");setLocation("");setFile(null);setCreating(false)};
+  const save=async()=>{if(type==="milestone-added"&&!title.trim())return setError("Give this Milestone a title.");if(type!=="milestone-added"&&!description.trim())return setError("Add a few words about this Moment.");setBusy(true);setError("");let uploadedUrl="";try{if(type==="milestone-added"){await createMilestone({spaceId:space.id,questId:quest.id,actorId:profile.id,actorName:profile.displayName,title:title.trim(),description:description.trim(),date,emoji});reset();return}if(file)uploadedUrl=await uploadImage(space.id,"ideas",quest.id,profile.id,file,setProgress);await addMoment({spaceId:space.id,questId:quest.id,actorId:profile.id,actorName:profile.displayName,type,title:MANUAL_TYPES.find(item=>item.id===type)?.label||"Journey Update",description:description.trim(),location:location.trim()||undefined,imageUrl:uploadedUrl||undefined,emoji:emoji.trim()||undefined});reset()}catch(failure){if(uploadedUrl)void removeImage(uploadedUrl);setError(failure instanceof Error?failure.message:"This Moment could not be saved.")}finally{setBusy(false);setProgress(0)}};
+  const finish=async(moment:MomentRecord)=>{try{await completeMilestone(moment.milestoneId||moment.id,profile.id,profile.displayName)}catch(failure){setError(failure instanceof Error?failure.message:"This Milestone could not be completed.")}};
+  return <section className={compact?"journey-timeline compact":"journey-timeline"} aria-labelledby={`journey-${quest.id}`}>
+    <header className="journey-heading"><div><p className="eyebrow">Meaningful moments</p><h3 id={`journey-${quest.id}`}>The Journey</h3></div><div className="journey-actions"><label>Order<select aria-label="Journey order" value={order} onChange={event=>setOrder(event.target.value as JourneyOrder)}><option value="newest">Newest first</option><option value="chronological">Beginning first</option></select></label><button className="secondary" onClick={()=>setCreating(true)}><Plus/>Add Moment</button></div></header>
+    {summary.length>0&&<div className="quest-journey-summary">{summary.map(line=><span key={line}>{line}</span>)}</div>}
+    {creating&&<div className="moment-composer"><header><div><p className="eyebrow">A meaningful update</p><h4>{type==="milestone-added"?"Add a Milestone":"Add a Moment"}</h4></div><button className="icon" aria-label="Close Moment composer" onClick={()=>setCreating(false)}><X/></button></header><div className="moment-types">{MANUAL_TYPES.map(item=><button key={item.id} className={type===item.id?"active":""} aria-pressed={type===item.id} onClick={()=>{setType(item.id);setEmoji(item.emoji)}}>{item.emoji}<span>{item.label}</span></button>)}</div>{type==="milestone-added"&&<><label>Milestone title<input value={title} onChange={event=>setTitle(event.target.value)} placeholder="Booked the flights"/></label><label>Date, if it has one<input type="date" value={date} onChange={event=>setDate(event.target.value)}/></label></>}<label>{type==="milestone-added"?"A little context, if it matters":"What happened?"}<textarea value={description} onChange={event=>setDescription(event.target.value)} placeholder="What made this worth remembering?"/></label>{type!=="milestone-added"&&<><div className="twocol"><label>Emoji<input value={emoji} maxLength={8} onChange={event=>setEmoji(event.target.value)}/></label><label>Location, if it matters<input value={location} onChange={event=>setLocation(event.target.value)}/></label></div><label>Photo, if this Moment has one<input type="file" accept="image/*" onChange={event=>setFile(event.target.files?.[0]||null)}/></label></>}{error&&<div className="error" role="alert">{error}</div>}<button className="primary" disabled={busy} onClick={save}>{busy?progress?`Uploading ${progress}%...`:"Saving...":type==="milestone-added"?"Add Milestone":"Add to Journey"}</button></div>}
+    {milestones.length>0&&<section className="milestones" aria-labelledby={`milestones-${quest.id}`}><header><h4 id={`milestones-${quest.id}`}>Milestones</h4><div className="milestone-filters" aria-label="Milestone filters">{(["all","upcoming","completed"] as const).map(value=><button key={value} className={milestoneFilter===value?"active":""} aria-pressed={milestoneFilter===value} onClick={()=>setMilestoneFilter(value)}>{value[0].toUpperCase()+value.slice(1)}</button>)}</div></header><div>{milestones.map(moment=><article className={`milestone-row ${moment.milestoneStatus||"undated"}`} key={moment.id}><span aria-hidden="true">{moment.emoji||"\u2B50"}</span><div><b>{moment.title}</b>{moment.milestoneDate&&<small>{new Date(moment.milestoneDate+"T12:00:00").toLocaleDateString()}</small>}</div>{moment.milestoneStatus!=="completed"?<button className="secondary small" onClick={()=>void finish(moment)}><Check/>Complete</button>:<span className="milestone-done"><Check/>Reached</span>}</article>)}</div></section>}
+    {!creating&&error&&<div className="error" role="alert">{error}</div>}{ordered.length?<div className="moment-list">{ordered.map(moment=><MomentCard key={moment.id} moment={moment}/>)}</div>:<div className="journey-empty"><Sparkles aria-hidden="true"/><h4>This Journey is ready for its first Moment.</h4><p>Notice the small wins and meaningful turns as they happen.</p><button className="secondary" onClick={()=>setCreating(true)}>Add the first Moment</button></div>}
+  </section>
 }

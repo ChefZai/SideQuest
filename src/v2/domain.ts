@@ -16,5 +16,5 @@ export interface Reflection{id:string;userId:string;userName:string;rating:numbe
 export interface Memory{id:string;ideaId:string;spaceId:string;actualCost:string;photoUrls:string[];completedBy:string;completedAt?:Timestamp;updatedAt?:Timestamp}
 export interface Comment{id:string;authorId:string;authorName:string;text:string;createdAt?:Timestamp}
 export interface Reaction{userId:string;userName:string;type:string;updatedAt?:Timestamp}
-export interface ActivityItem{id:string;spaceId:string;actorId:string;actorName:string;action:string;targetId:string;targetTitle:string;questId?:string;momentType?:MomentType;title?:string;description?:string;imageUrl?:string;location?:string;people?:string[];reactionCount?:number;isMilestone?:boolean;emoji?:string;celebrationColor?:string;createdAt?:Timestamp}
+export interface ActivityItem{id:string;spaceId:string;actorId:string;actorName:string;action:string;targetId:string;targetTitle:string;questId?:string;momentType?:MomentType;title?:string;description?:string;imageUrl?:string;location?:string;people?:string[];reactionCount?:number;isMilestone?:boolean;milestoneId?:string;milestoneStatus?:"upcoming"|"completed"|"undated";milestoneDate?:string;emoji?:string;celebrationColor?:string;createdAt?:Timestamp}
 

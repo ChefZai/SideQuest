@@ -185,6 +185,17 @@ service cloud.firestore {
       allow create: if member(request.resource.data.spaceId)
         && request.resource.data.actorId == request.auth.uid;
       allow read: if member(resource.data.spaceId);
+      allow update: if member(resource.data.spaceId)
+        && request.resource.data.actorId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['actorId', 'actorName', 'action', 'momentType', 'milestoneStatus', 'isMilestone', 'completedAt'])
+        && resource.data.isMilestone == true
+        && request.resource.data.isMilestone == true
+        && request.resource.data.spaceId == resource.data.spaceId
+        && request.resource.data.targetId == resource.data.targetId
+        && request.resource.data.milestoneId == resource.data.milestoneId
+        && request.resource.data.milestoneStatus == 'completed'
+        && request.resource.data.momentType == 'milestone-reached'
+        && request.resource.data.action == 'milestone-reached';
     }
 
     match /invitations/{code} {

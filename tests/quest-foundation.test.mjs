@@ -114,9 +114,8 @@ test("Home renders the Quest information architecture and warm empty states", ()
     onOpen() {},
     onCreate() {},
   }));
-  for (const heading of ["Shared With You", "Shared Excitement", "Becoming Real"]) {
-    assert.match(markup, new RegExp(heading));
-  }
+  assert.match(markup, /Continue your Quest/);
+  assert.doesNotMatch(markup, /What.s Happening/, "empty dynamic groups stay hidden");
   assert.match(markup, /See the northern lights/);
 });
 
