@@ -1,6 +1,7 @@
 import type { CategoryDefinition, IdeaRecord, OnboardingState } from "../types/domain";
 
 export const CURRENT_ONBOARDING_VERSION = 3;
+export const CURRENT_PRODUCT_TOUR_VERSION = "v5_6_editorial";
 
 export function normalizeOnboardingState(
   saved: unknown,
@@ -14,6 +15,9 @@ export function normalizeOnboardingState(
   const firstIdeaId = typeof value.firstIdeaId === "string" && value.firstIdeaId
     ? value.firstIdeaId
     : undefined;
+  const productTourVersion = typeof value.productTourVersion === "string" && value.productTourVersion
+    ? value.productTourVersion
+    : undefined;
 
   return {
     started: Boolean(value.started),
@@ -25,6 +29,7 @@ export function normalizeOnboardingState(
     replaying: Boolean(value.replaying),
     ...(firstIdeaId ? { firstIdeaId } : {}),
     ...(version !== undefined ? { version } : {}),
+    ...(productTourVersion ? { productTourVersion } : {}),
   };
 }
 
@@ -50,9 +55,17 @@ export function hasPersistedFirstIdea(
     onboarding.firstIdeaId && ideas.some((idea) => idea.id === onboarding.firstIdeaId),
   );
 }
+
 export function shouldShowOnboardingIntroduction(
   onboarding: OnboardingState,
   currentVersion: number = CURRENT_ONBOARDING_VERSION,
 ): boolean {
   return onboarding.completed && (onboarding.version ?? 0) < currentVersion;
+}
+
+export function shouldShowProductTour(
+  onboarding: OnboardingState,
+  currentVersion: string = CURRENT_PRODUCT_TOUR_VERSION,
+): boolean {
+  return onboarding.completed && onboarding.productTourVersion !== currentVersion;
 }

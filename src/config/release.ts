@@ -1,5 +1,5 @@
 export const SIDEQUEST_RELEASE = {
-  version: "5.5",
-  label: "Version 5.5",
-  name: "Editorial Product Polish",
+  version: "5.6",
+  label: "Version 5.6",
+  name: "A New Chapter",
 } as const;

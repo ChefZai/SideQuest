@@ -113,6 +113,7 @@ test("Help can replay onboarding and contextual tips", () => {
   }));
   assert.match(markup, /Replay templates &amp; Inspiration/);
   assert.match(markup, /Replay contextual tips/);
+  assert.match(markup, /Replay What&#x27;s New/);
   assert.match(markup, /Help &amp; Learn/);
 });
 test("first-run Spaces provide usable default categories", () => {

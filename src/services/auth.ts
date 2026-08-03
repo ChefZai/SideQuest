@@ -14,7 +14,7 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import type { OnboardingState, UserProfile } from "../types/domain";
-import { CURRENT_ONBOARDING_VERSION, normalizeOnboardingState } from "../v2/onboarding-state";
+import { CURRENT_ONBOARDING_VERSION, CURRENT_PRODUCT_TOUR_VERSION, normalizeOnboardingState } from "../v2/onboarding-state";
 
 export const NEW_USER_ONBOARDING: OnboardingState = {
   started: false,
@@ -22,6 +22,7 @@ export const NEW_USER_ONBOARDING: OnboardingState = {
   completed: false,
   dismissedTips: [],
   version: CURRENT_ONBOARDING_VERSION,
+  productTourVersion: CURRENT_PRODUCT_TOUR_VERSION,
 };
 
 export const LEGACY_USER_ONBOARDING: OnboardingState = {

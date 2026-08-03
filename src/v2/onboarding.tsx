@@ -186,10 +186,12 @@ export function ContextTip({
 export function HelpLearn({
   onClose,
   onReplay,
+  onReplayWhatsNew,
   onReplayTips,
 }: {
   onClose: () => void;
   onReplay: () => void;
+  onReplayWhatsNew: () => void;
   onReplayTips: () => void;
 }) {
   const [openArticle, setOpenArticle] = useState("what-is-sidequest");
@@ -212,7 +214,7 @@ export function HelpLearn({
         {HELP_SECTIONS.map(section=><section key={section} id={`help-section-${section.toLowerCase().replaceAll(" ","-")}`}><h3>{section}</h3><div className="help-grid">{HELP_ARTICLES.filter(article=>article.section===section).map(article=><details id={`help-${article.id}`} tabIndex={-1} key={article.id} open={openArticle===article.id} onToggle={event=>{if(event.currentTarget.open)setOpenArticle(article.id);else if(openArticle===article.id)setOpenArticle("")}}><summary><span>{section==="Start here"?<Compass/>:section==="Troubleshooting"?<MessageCircle/>:section==="Templates & Inspiration"?<Lightbulb/>:section==="Core features"?<Check/>:<Users/>}</span><span><b>{article.title}</b><small>{article.summary}</small></span></summary><div className="help-article-body"><p>{article.summary}</p>{article.steps&&<ol>{article.steps.map(step=><li key={step}>{step}</li>)}</ol>}{article.tip&&<aside><Lightbulb aria-hidden="true"/><span>{article.tip}</span></aside>}{article.related&&article.related.length>0&&<div className="related-guides"><small>Related guides</small>{article.related.map(id=>{const related=helpArticle(id);return related?<button type="button" className="link" key={id} onClick={()=>openRelated(id)}>{related.title}</button>:null})}</div>}</div></details>)}</div></section>)}
       </div>
       <VersionHistory />
-      <div className="help-replay"><button className="secondary" onClick={onReplay}>Replay templates & Inspiration</button><button className="link" onClick={onReplayTips}>Replay contextual tips</button></div>
+      <div className="help-replay"><button className="primary" onClick={onReplayWhatsNew}>Replay What's New</button><button className="secondary" onClick={onReplay}>Replay templates & Inspiration</button><button className="link" onClick={onReplayTips}>Replay contextual tips</button></div>
     </section>
   );
 }
