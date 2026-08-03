@@ -289,3 +289,40 @@ test("Storage allows members and blocks outsiders", async () => {
   await assertSucceeds(getDownloadURL(ref(memberStorage, path)));
   await assertFails(getDownloadURL(ref(outsiderStorage, path)));
 });
+
+test("members can read a Space-scoped Journey and complete one Milestone safely", async () => {
+  const memberDb = env.authenticatedContext(memberId).firestore();
+  const ownerDb = env.authenticatedContext(ownerId).firestore();
+  const outsiderDb = env.authenticatedContext(outsiderId).firestore();
+  const milestone = doc(memberDb, "activity", "milestone-one");
+  await assertSucceeds(setDoc(milestone, {
+    spaceId,
+    actorId: memberId,
+    actorName: "Member",
+    action: "milestone-added",
+    targetId: "idea-one",
+    targetTitle: "Booked flights",
+    questId: "idea-one",
+    momentType: "milestone-added",
+    title: "Booked flights",
+    isMilestone: true,
+    milestoneId: "milestone-one",
+    milestoneStatus: "upcoming",
+    createdAt: Timestamp.now(),
+  }));
+  await assertSucceeds(getDocs(query(collection(ownerDb, "activity"), where("spaceId", "==", spaceId), where("targetId", "==", "idea-one"))));
+  await assertSucceeds(updateDoc(doc(ownerDb, "activity", "milestone-one"), {
+    actorId: ownerId,
+    actorName: "Owner",
+    action: "milestone-reached",
+    momentType: "milestone-reached",
+    milestoneStatus: "completed",
+    completedAt: Timestamp.now(),
+  }));
+  await assertFails(updateDoc(doc(outsiderDb, "activity", "milestone-one"), {
+    action: "milestone-reached",
+    momentType: "milestone-reached",
+    milestoneStatus: "completed",
+  }));
+  await assertFails(updateDoc(doc(ownerDb, "activity", "milestone-one"), { targetId: "another-quest" }));
+});

@@ -99,7 +99,9 @@ test("focused Home uses real shared and active Quest signals", () => {
     onOpen() {},
     onCreate() {},
   }));
-  for (const title of ["Shared With You", "Shared Excitement", "Becoming Real"]) assert.match(markup, new RegExp(title));
+  assert.match(markup, /Continue your Quest/);
+  assert.doesNotMatch(markup, /What.s Happening/, "Home hides empty dynamic groups");
+  assert.match(markup, /Chapters &amp; Collections/);
   assert.match(markup, /National Parks/);
   assert.match(markup, /Remember this/);
 });
@@ -112,7 +114,7 @@ test("reflection, Memory mode, manual Moments, and Journey events remain wired",
   assert.match(source, /reflection-written/);
   assert.match(source, /quest-completed/);
   assert.match(timeline, /Add a Moment/);
-  assert.match(timeline, /milestone-reached/);
+  assert.match(timeline, /completeMilestone/);
   assert.match(timeline, /watchJourney/);
 });
 

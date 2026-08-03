@@ -23,6 +23,7 @@ export interface QuestMetadata {
   questType?: QuestType;
   status?: QuestStatus;
   collectionId?: string | null;
+  chapterMode?: boolean;
   parentQuestId?: string | null;
   relatedQuestIds?: string[];
 }
@@ -84,6 +85,7 @@ export function normalizeQuestMetadata<T extends QuestMetadata & { completed?: b
     ...value,
     questType: resolveQuestType(value.questType),
     status: resolveQuestStatus(value.status, Boolean(value.completed)),
+    chapterMode: value.chapterMode === true,
     collectionId: typeof value.collectionId === "string" && value.collectionId.trim()
       ? value.collectionId.trim()
       : null,

@@ -7,6 +7,7 @@ export const MOMENT_TYPES = [
   "photo-added",
   "comment-added",
   "reaction-added",
+  "milestone-added",
   "milestone-reached",
   "quest-completed",
   "reflection-written",
@@ -35,6 +36,9 @@ export interface MomentRecord {
   people?: string[];
   reactionCount?: number;
   isMilestone?: boolean;
+  milestoneId?: string;
+  milestoneStatus?: "upcoming" | "completed" | "undated";
+  milestoneDate?: string;
   emoji?: string;
   celebrationColor?: string;
   createdAt?: Timestamp;
@@ -57,6 +61,7 @@ const TITLES: Record<MomentType, string> = {
   "photo-added": "Added a photo",
   "comment-added": "Shared a thought",
   "reaction-added": "Shared some excitement",
+  "milestone-added": "Added a milestone",
   "milestone-reached": "Reached a milestone",
   "quest-completed": "Completed this Journey",
   "reflection-written": "Wrote a reflection",
@@ -89,7 +94,10 @@ export function normalizeMoment(value: Record<string, unknown> & { id: string })
     location: typeof value.location === "string" && value.location.trim() ? value.location.trim() : undefined,
     people: Array.isArray(value.people) ? value.people.filter((item): item is string => typeof item === "string").slice(0, 12) : undefined,
     reactionCount: typeof value.reactionCount === "number" && Number.isFinite(value.reactionCount) ? Math.max(0, value.reactionCount) : undefined,
-    isMilestone: value.isMilestone === true || type === "milestone-reached",
+    isMilestone: value.isMilestone === true || type === "milestone-added" || type === "milestone-reached",
+    milestoneId: typeof value.milestoneId === "string" && value.milestoneId.trim() ? value.milestoneId.trim() : undefined,
+    milestoneStatus: value.milestoneStatus === "upcoming" || value.milestoneStatus === "completed" || value.milestoneStatus === "undated" ? value.milestoneStatus : type === "milestone-reached" ? "completed" : undefined,
+    milestoneDate: typeof value.milestoneDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value.milestoneDate) ? value.milestoneDate : undefined,
     emoji: typeof value.emoji === "string" && value.emoji.trim() ? value.emoji.trim().slice(0, 8) : undefined,
     celebrationColor: typeof value.celebrationColor === "string" && /^#[0-9a-f]{6}$/i.test(value.celebrationColor) ? value.celebrationColor : undefined,
     createdAt: value.createdAt as Timestamp | undefined,
@@ -103,7 +111,7 @@ export function orderMoments(moments: MomentRecord[], order: JourneyOrder = "new
 }
 
 export function journeySummary(moments: MomentRecord[], startedAt?: Timestamp, completed = false): string[] {
-  const milestones = moments.filter(moment => moment.isMilestone).length;
+  const milestones = moments.filter(moment => moment.isMilestone && (moment.milestoneStatus === "completed" || moment.type === "milestone-reached")).length;
   const latest = orderMoments(moments)[0];
   const lines: string[] = [];
   if (milestones) lines.push(`You've completed ${milestones} ${milestones === 1 ? "milestone" : "milestones"}.`);

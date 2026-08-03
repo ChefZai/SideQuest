@@ -1,38 +1,26 @@
-import { Heart, Plus, Sparkles } from "lucide-react";
-import { meaningfulHomeSections } from "../features/product-focus/productFocus";
+import { ArrowRight, BookOpen, Heart, Plus, Sparkles, Target } from "lucide-react";
+import { featuredMemory, livingHomeGroups, measurableGoal, momentumSignals, selectHeroQuest } from "../features/living-quests/livingQuests";
+import { resolveQuestType } from "../features/quests/questTypes";
 import type { UserProfile } from "../types/domain";
 import { IdeaCard } from "./IdeaCard";
 import type { ActivityItem, Idea, Space } from "./domain";
 import "./quest-foundation.css";
 
-function FocusSection({ title, copy, ideas, space, profile, onOpen, empty }: {
-  title: string; copy: string; ideas: Idea[]; space: Space; profile: UserProfile;
-  onOpen: (idea: Idea) => void; empty: string;
-}) {
-  return <section className="home-focus-section">
-    <header><div><p className="eyebrow">{copy}</p><h2>{title}</h2></div></header>
-    {ideas.length
-      ? <div className="cards">{ideas.map(quest => <IdeaCard key={quest.id} idea={quest} space={space} profile={profile} onOpen={() => onOpen(quest)} />)}</div>
-      : <div className="focus-empty"><Sparkles aria-hidden="true" /><p>{empty}</p></div>}
-  </section>;
-}
-
-export function HomeQuestSections({ ideas, events = [], space, profile, onOpen, onCreate }: {
-  ideas: Idea[]; events: ActivityItem[]; space: Space; profile: UserProfile;
-  onOpen: (idea: Idea) => void; onCreate: () => void;
-}) {
-  if (!ideas.length) return <div className="empty quest-home-empty">
-    <span aria-hidden="true">✨</span><h2>Your next favorite memory can start here.</h2>
-    <p>Save one possibility. It can stay simple until the right moment arrives.</p>
-    <button className="primary" onClick={onCreate}><Plus />Save your first Quest</button>
-  </div>;
-  const sections = meaningfulHomeSections(ideas, events, profile.id);
-  return <div className="home-focus-sections">
-    <FocusSection title="Shared With You" copy="Possibilities from your people" ideas={sections.sharedWithYou} space={space} profile={profile} onOpen={onOpen} empty="Nothing is waiting on you. When someone shares a possibility, it will be here—without pressure." />
-    <FocusSection title="Shared Excitement" copy="The things you both want" ideas={sections.sharedExcitement} space={space} profile={profile} onOpen={onOpen} empty="A little mutual excitement will gather here when your reactions line up." />
-    <FocusSection title="Becoming Real" copy="Possibilities beginning to move" ideas={sections.becomingReal} space={space} profile={profile} onOpen={onOpen} empty="Nothing needs planning yet. When a Quest starts feeling real, you can take the next small step." />
-    {sections.memory && <button className="remember-feature" onClick={() => onOpen(sections.memory!)} style={sections.memory.photoUrl ? { backgroundImage: `linear-gradient(90deg,rgba(23,39,36,.9),rgba(23,39,36,.28)),url(${sections.memory.photoUrl})` } : undefined}>
-      <Heart aria-hidden="true" /><span><small>Remember this?</small><b>{sections.memory.title}</b></span>
-    </button>}
-  </div>;
+function greeting(name:string){const hour=new Date().getHours();return`${hour<12?"Good morning":hour<18?"Good afternoon":"Good evening"}, ${name.split(" ")[0]}.`}
+function EditorialRow({title,kicker,ideas,space,profile,events,onOpen}:{title:string;kicker:string;ideas:Idea[];space:Space;profile:UserProfile;events:ActivityItem[];onOpen:(idea:Idea)=>void}){if(!ideas.length)return null;return <section className="living-home-row"><header><div><p className="eyebrow">{kicker}</p><h2>{title}</h2></div><span>{ideas.length}</span></header><div className="cards">{ideas.slice(0,4).map(quest=><IdeaCard key={quest.id} idea={quest} space={space} profile={profile} events={events} onOpen={()=>onOpen(quest)} variant="compact"/>)}</div></section>}
+export function HomeQuestSections({ideas,events=[],space,profile,onOpen,onCreate,onInspire}:{ideas:Idea[];events:ActivityItem[];space:Space;profile:UserProfile;onOpen:(idea:Idea)=>void;onCreate:()=>void;onInspire?:()=>void}){
+  if(!ideas.length)return <div className="empty quest-home-empty"><span aria-hidden="true">✨</span><h2>Your future is still unwritten.</h2><p>Save something that made you stop and think.</p><div><button className="primary" onClick={onCreate}><Plus/>Save your first Quest</button>{onInspire&&<button className="secondary" onClick={onInspire}><Sparkles/>Get inspired</button>}</div></div>;
+  const active=ideas.filter(quest=>!quest.completed),hero=selectHeroQuest(active,events),groups=livingHomeGroups(ideas,events,profile.id),memory=featuredMemory(ideas),goals=active.filter(quest=>Boolean(measurableGoal(quest))),collections=active.filter(quest=>resolveQuestType(quest.questType)==="collection");
+  const withoutHero=(items:Idea[])=>items.filter(item=>item.id!==hero?.id);
+  const shared=[...groups.waitingOnYou,...groups.gettingExciting,...groups.almostReal].filter((item,index,list)=>item.id!==hero?.id&&list.findIndex(candidate=>candidate.id===item.id)===index);
+  const personal=active.filter(item=>item.id!==hero?.id&&item.createdBy===profile.id&&resolveQuestType(item.questType)!=="collection"&&!measurableGoal(item)).slice(0,4);
+  const heroSignals=hero?momentumSignals(hero,events,space):[];
+  return <div className="living-home"><p className="living-greeting">{greeting(profile.displayName)}</p>{hero&&<button className={`hero-quest${hero.photoUrl?" has-image":""}`} style={hero.photoUrl?{backgroundImage:`linear-gradient(90deg,rgba(23,39,36,.88),rgba(23,39,36,.12)),url(${hero.photoUrl})`}:undefined} onClick={()=>onOpen(hero)} aria-label={`Continue ${hero.title}`}><div><small>The story unfolding now</small><h1>{hero.title}</h1><p>{heroSignals.map(signal=>signal.label).join(" · ")}</p><span className="visually-hidden">Continue your Quest</span><span>{measurableGoal(hero)?"Update progress":"Continue"}<ArrowRight/></span></div></button>}
+  <EditorialRow title="Shared Momentum" kicker="Possibilities moving together" ideas={shared} space={space} profile={profile} events={events} onOpen={onOpen}/>
+  <EditorialRow title="Continue Building" kicker="The life you are shaping" ideas={personal} space={space} profile={profile} events={events} onOpen={onOpen}/>
+  {goals.length>0&&<section className="active-goals"><header><div><p className="eyebrow">Measurable dreams in motion</p><h2>Active Goals</h2></div><Target aria-hidden="true"/></header><div>{goals.slice(0,4).map(goal=>{const progress=measurableGoal(goal)!;return <button key={goal.id} onClick={()=>onOpen(goal)} aria-label={`Open ${goal.title}, ${progress.current} of ${progress.target} ${progress.unit}`}><div><b>{goal.title}</b><span>{progress.current} / {progress.target} {progress.unit}</span></div><progress value={Math.min(progress.current,progress.target)} max={progress.target}>{progress.percentage}%</progress><strong>{progress.percentage}%</strong></button>})}</div></section>}
+  {memory&&<button className="remember-feature living-memory" onClick={()=>onOpen(memory)} style={memory.photoUrl?{backgroundImage:`linear-gradient(90deg,rgba(23,39,36,.92),rgba(23,39,36,.26)),url(${memory.photoUrl})`}:undefined}><Heart aria-hidden="true"/><span><small>Worth remembering</small><span className="visually-hidden">Remember this</span><b>{memory.title}</b><em>{memory.description||"A moment that became part of your life."}</em></span><ArrowRight aria-hidden="true"/></button>}
+  {collections.length>0&&<section className="chapter-preview"><header><div><p className="eyebrow">Your life is becoming a story</p><h2>Life Chapters</h2><span className="visually-hidden">Chapters & Collections</span></div><BookOpen aria-hidden="true"/></header><div>{collections.slice(0,3).map(collection=><button key={collection.id} onClick={()=>onOpen(collection)} style={collection.photoUrl?{backgroundImage:`linear-gradient(0deg,rgba(23,39,36,.86),rgba(23,39,36,.1)),url(${collection.photoUrl})`}:undefined}><span>{collection.chapterMode?"Chapter":"Collection"}</span><b>{collection.title}</b><small>{collection.description||"Experiences that belong together."}</small></button>)}</div></section>}
+  {onInspire&&<button className="dream-bigger" onClick={onInspire}><span><Sparkles aria-hidden="true"/><small>Dream Bigger</small><b>Ready for another possibility?</b></span><span>Get inspired <ArrowRight/></span></button>}
+  </div>
 }
