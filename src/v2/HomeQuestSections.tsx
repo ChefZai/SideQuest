@@ -4,6 +4,7 @@ import { resolveQuestType } from "../features/quests/questTypes";
 import type { UserProfile } from "../types/domain";
 import { IdeaCard } from "./IdeaCard";
 import type { ActivityItem, Idea, Space } from "./domain";
+import { questTransitionName } from "../platform/viewTransitions";
 import "./quest-foundation.css";
 
 function greeting(name:string){const hour=new Date().getHours();return`${hour<12?"Good morning":hour<18?"Good afternoon":"Good evening"}, ${name.split(" ")[0]}.`}
@@ -15,7 +16,7 @@ export function HomeQuestSections({ideas,events=[],space,profile,onOpen,onCreate
   const shared=[...groups.waitingOnYou,...groups.gettingExciting,...groups.almostReal].filter((item,index,list)=>item.id!==hero?.id&&list.findIndex(candidate=>candidate.id===item.id)===index);
   const personal=active.filter(item=>item.id!==hero?.id&&item.createdBy===profile.id&&resolveQuestType(item.questType)!=="collection"&&!measurableGoal(item)).slice(0,4);
   const heroSignals=hero?momentumSignals(hero,events,space):[];
-  return <div className="living-home"><p className="living-greeting">{greeting(profile.displayName)}</p>{hero&&<button className={`hero-quest${hero.photoUrl?" has-image":""}`} style={hero.photoUrl?{backgroundImage:`linear-gradient(90deg,rgba(23,39,36,.88),rgba(23,39,36,.12)),url(${hero.photoUrl})`}:undefined} onClick={()=>onOpen(hero)} aria-label={`Continue ${hero.title}`}><div><small>The story unfolding now</small><h1>{hero.title}</h1><p>{heroSignals.map(signal=>signal.label).join(" · ")}</p><span className="visually-hidden">Continue your Quest</span><span>{measurableGoal(hero)?"Update progress":"Continue"}<ArrowRight/></span></div></button>}
+  return <div className="living-home"><p className="living-greeting">{greeting(profile.displayName)}</p>{hero&&<button className={`hero-quest${hero.photoUrl?" has-image":""}`} style={{...(hero.photoUrl?{backgroundImage:`linear-gradient(90deg,rgba(23,39,36,.88),rgba(23,39,36,.12)),url(${hero.photoUrl})`}:{}),viewTransitionName:questTransitionName(hero.id)}} onClick={()=>onOpen(hero)} aria-label={`Continue ${hero.title}`}><div><small>The story unfolding now</small><h1>{hero.title}</h1><p>{heroSignals.map(signal=>signal.label).join(" · ")}</p><span className="visually-hidden">Continue your Quest</span><span>{measurableGoal(hero)?"Update progress":"Continue"}<ArrowRight/></span></div></button>}
   <EditorialRow title="Continue Building" kicker="The life you are shaping" ideas={personal} space={space} profile={profile} events={events} onOpen={onOpen}/>
   <EditorialRow title="Shared Momentum" kicker="Possibilities moving together" ideas={shared} space={space} profile={profile} events={events} onOpen={onOpen}/>
   {goals.length>0&&<section className="active-goals"><header><div><p className="eyebrow">Measurable dreams in motion</p><h2>Active Goals</h2></div><Target aria-hidden="true"/></header><div>{goals.slice(0,4).map(goal=>{const progress=measurableGoal(goal)!;return <button key={goal.id} onClick={()=>onOpen(goal)} aria-label={`Open ${goal.title}, ${progress.current} of ${progress.target} ${progress.unit}`}><div><b>{goal.title}</b><span>{progress.current} / {progress.target} {progress.unit}</span></div><progress value={Math.min(progress.current,progress.target)} max={progress.target}>{progress.percentage}%</progress><strong>{progress.percentage}%</strong></button>})}</div></section>}

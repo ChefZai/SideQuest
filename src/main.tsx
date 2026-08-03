@@ -10,6 +10,7 @@ import "./v2/onboarding.css";
 import "./v2/polish-system.css";
 import "./v2/editorial-55.css";
 import "./v2/product-tour.css";
+import "./v2/interaction-system.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
