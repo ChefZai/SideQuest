@@ -1,0 +1,98 @@
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --appbar-height: 68px;
+  --navigation-height: 69px;
+  --page-padding-inline: clamp(17px, 4vw, 40px);
+  --page-padding-block: clamp(28px, 5vw, 55px);
+  --page-max-width: 1160px;
+  --content-spacing: clamp(24px, 4vw, 42px);
+  --section-spacing: clamp(28px, 5vw, 52px);
+  --card-padding: clamp(15px, 2.5vw, 22px);
+  --bottom-clearance: calc(var(--navigation-height) + 31px + var(--safe-bottom));
+  --dialog-padding: clamp(16px, 3vw, 25px);
+  --dialog-edge-gap: 10px;
+  --dialog-max-height: calc(100dvh - (2 * var(--dialog-edge-gap)) - var(--safe-top) - var(--safe-bottom));
+}
+
+/* One page scroll root beneath persistent app chrome. */
+.content {
+  width: min(var(--page-max-width), 100%);
+  min-width: 0;
+  margin-inline: auto;
+  padding: var(--page-padding-block) var(--page-padding-inline) var(--bottom-clearance);
+  overflow-x: clip;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* One independent scroll root per dialog; the backdrop never scrolls. */
+.backdrop {
+  padding: calc(var(--dialog-edge-gap) + var(--safe-top)) var(--dialog-edge-gap)
+    calc(var(--dialog-edge-gap) + var(--safe-bottom));
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.backdrop > .modal {
+  max-width: 100%;
+  max-height: var(--dialog-max-height);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.backdrop > .detail {
+  width: min(980px, 100%);
+  padding: 0;
+  overflow-y: auto !important;
+}
+
+.detail > .tabs { position: sticky; top: 0; z-index: 7; }
+.detail-content { padding-bottom: max(var(--dialog-padding), var(--safe-bottom)); }
+
+button, summary, select,
+input[type="checkbox"] + span,
+input[type="radio"] + span { min-height: 44px; }
+
+.maps-link { min-height: 44px; padding-block: 7px; }
+.quest-status-chip select { min-height: 44px; font-size: max(16px, 1em); }
+.photo { min-height: 44px; }
+.help-section-links a { min-height: 44px; display: flex; align-items: center; }
+.toggle, .relationship-options label { min-height: 44px; }
+
+@media (max-width: 767px) {
+  :root {
+    --page-padding-inline: clamp(14px, 4.35vw, 20px);
+    --page-padding-block: clamp(20px, 5vw, 30px);
+    --dialog-padding: 16px;
+  }
+
+  input, textarea, select { font-size: 16px !important; line-height: 1.45; }
+  .backdrop { place-items: end center; }
+  .backdrop > .modal { width: 100%; border-radius: 24px 24px 16px 16px; }
+  .backdrop > .detail { height: var(--dialog-max-height); max-height: var(--dialog-max-height); }
+  .detail-hero { min-height: clamp(230px, 36dvh, 310px); height: auto; }
+}
+
+@media (max-width: 360px) {
+  :root { --page-padding-inline: 14px; --dialog-edge-gap: 6px; }
+}
+
+@media (min-width: 768px) {
+  .content { overflow: visible; }
+}
+
+@supports not (height: 100dvh) {
+  :root { --dialog-max-height: calc(100vh - (2 * var(--dialog-edge-gap)) - var(--safe-top) - var(--safe-bottom)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content, .backdrop > .modal { scroll-behavior: auto !important; }
+}
