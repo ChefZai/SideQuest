@@ -1,0 +1,216 @@
+/* SideQuest 5.8 Sprint 2 — authoritative visual vocabulary. Loaded last. */
+:root {
+  /* Foundation: palette */
+  --color-paper-0: #fffdf8;
+  --color-paper-1: #fff9f0;
+  --color-paper-2: #f4f8f5;
+  --color-ink-900: #24332f;
+  --color-ink-700: #4d5d57;
+  --color-ink-500: #65736e;
+  --color-ink-400: #788680;
+  --color-evergreen-700: #087765;
+  --color-evergreen-800: #066b5b;
+  --color-evergreen-900: #05594d;
+  --color-teal-400: #20b59b;
+  --color-gold-300: #f1cf67;
+  --color-peach-300: #ffb49a;
+  --color-sky-300: #a9d9ef;
+  --color-success-600: #288a68;
+  --color-warning-600: #936b16;
+  --color-error-600: #b94f52;
+
+  /* Foundation: spacing */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Foundation: typography */
+  --font-editorial: Fraunces, Georgia, serif;
+  --font-functional: Inter, system-ui, sans-serif;
+  --text-display-xl: clamp(44px, 7vw, 84px);
+  --text-display-lg: clamp(38px, 5.5vw, 64px);
+  --text-display-md: clamp(32px, 4vw, 48px);
+  --text-page-title: clamp(30px, 3.6vw, 44px);
+  --text-section-title: clamp(25px, 3vw, 36px);
+  --text-card-title: clamp(20px, 2vw, 28px);
+  --text-body-lg: 18px;
+  --text-body: 16px;
+  --text-body-sm: 14px;
+  --text-label: 13px;
+  --text-caption: 12px;
+  --text-eyebrow: 11px;
+
+  /* Foundation: shape and depth */
+  --radius-control: 13px;
+  --radius-input: 14px;
+  --radius-chip: 999px;
+  --radius-card: 20px;
+  --radius-editorial-card: 28px;
+  --radius-dialog: 28px;
+  --radius-sheet: 26px;
+  --shadow-none: none;
+  --shadow-subtle: 0 4px 14px rgba(36, 51, 47, .06);
+  --shadow-card: 0 12px 36px rgba(36, 51, 47, .09);
+  --shadow-floating: 0 20px 55px rgba(36, 51, 47, .14);
+  --shadow-navigation: 0 14px 40px rgba(36, 51, 47, .15);
+  --shadow-modal: 0 36px 110px rgba(23, 39, 36, .28);
+  --shadow-hero: 0 24px 70px rgba(36, 51, 47, .16);
+
+  /* Semantic */
+  --color-canvas: var(--color-paper-1);
+  --color-surface: #fff;
+  --color-surface-elevated: var(--color-paper-0);
+  --color-surface-subtle: var(--color-paper-2);
+  --color-text-primary: var(--color-ink-900);
+  --color-text-secondary: var(--color-ink-500);
+  --color-text-tertiary: var(--color-ink-400);
+  --color-border-subtle: #dde7e2;
+  --color-border-strong: #bdd1c8;
+  --color-divider: rgba(36, 51, 47, .1);
+  --color-action: var(--color-evergreen-700);
+  --color-action-hover: var(--color-evergreen-800);
+  --color-action-pressed: var(--color-evergreen-900);
+  --color-success: var(--color-success-600);
+  --color-warning: var(--color-warning-600);
+  --color-error: var(--color-error-600);
+  --color-info: #397d9c;
+  --color-focus: rgba(8, 119, 101, .42);
+  --color-overlay: rgba(30, 47, 42, .52);
+  --photo-gradient: linear-gradient(0deg, rgba(14, 28, 24, .92), rgba(14, 28, 24, .04) 75%);
+
+  /* Component aliases; Sprint 1 geometry remains the source of truth. */
+  --space-page-inline: var(--page-padding-inline);
+  --space-page-block: var(--page-padding-block);
+  --space-section: var(--section-spacing);
+  --space-card: var(--card-padding);
+  --space-control: var(--space-3);
+  --space-form: var(--space-4);
+  --space-cluster: var(--space-2);
+  --control-height: 44px;
+  --hero-radius: 34px;
+  --standard-card-radius: var(--radius-card);
+  --editorial-max-width: 1160px;
+  --reading-max-width: 720px;
+  --grid-gap: clamp(16px, 2.4vw, 24px);
+
+  /* Compatibility aliases for active historical sheets. */
+  --sq-bg: var(--color-canvas);
+  --sq-surface: var(--color-surface);
+  --sq-surface-raised: var(--color-surface-elevated);
+  --sq-soft: var(--color-surface-subtle);
+  --sq-cream: var(--color-text-primary);
+  --sq-muted: var(--color-text-secondary);
+  --sq-quiet: var(--color-text-tertiary);
+  --sq-border: var(--color-border-subtle);
+  --sq-success: var(--color-success);
+  --sq-error: var(--color-error);
+  --sq-radius-md: var(--radius-card);
+  --sq-radius-lg: var(--radius-editorial-card);
+  --sq-radius-control: var(--radius-control);
+  --sq-radius-card: var(--radius-card);
+  --sq-shadow: var(--shadow-floating);
+  --sq-shadow-rest: var(--shadow-card);
+  --sq-shadow-hover: var(--shadow-floating);
+  --sq-focus: 0 0 0 3px var(--color-focus);
+  --sq-motion-fast: var(--motion-quick);
+  --sq-motion-standard: var(--motion-standard);
+  --sq-motion-emphasis: var(--motion-page);
+  --sq-ease: var(--ease-out);
+}
+
+/* Typography roles */
+:where(body, button, input, textarea, select) { font-family: var(--font-functional); }
+:where(h1, h2, h3, .vlogo b, .display-editorial) { text-wrap: balance; }
+:where(.pagehead h1, .profile-hero h1) { font: 650 var(--text-page-title)/1.06 var(--font-editorial); letter-spacing: -.025em; }
+:where(.living-home-row h2, .active-goals h2, .chapter-preview h2, .section-title h3) { font: 650 var(--text-section-title)/1.12 var(--font-editorial); }
+:where(.living-card h2, .card h2, .inspiration-card h3) { font-family: var(--font-editorial); }
+:where(p, li) { line-height: 1.55; }
+.eyebrow { font: 750 var(--text-eyebrow)/1.25 var(--font-functional); letter-spacing: .1em !important; }
+
+/* Controls */
+:where(.primary, .secondary, .danger, .link, .icon, button) { min-height: var(--control-height); }
+:where(.primary, .secondary, .danger) { padding: 11px var(--space-4); border-radius: var(--radius-control); font-size: var(--text-body-sm); font-weight: 700; line-height: 1.2; }
+.primary { color: #fff; background: var(--color-action); box-shadow: 0 8px 22px rgba(8,119,101,.22); }
+.primary:hover:not(:disabled) { background: var(--color-action-hover); box-shadow: 0 10px 28px rgba(8,119,101,.28); }
+.primary:active:not(:disabled) { background: var(--color-action-pressed); }
+.secondary, .icon { color: var(--color-text-primary); background: var(--color-surface); border: 1px solid var(--color-border-subtle); box-shadow: var(--shadow-subtle); }
+.secondary:hover:not(:disabled), .icon:hover:not(:disabled) { background: var(--color-surface-subtle); border-color: var(--color-border-strong); }
+.danger { color: var(--color-error); background: #fff4f3; border: 1px solid #e8c1c0; }
+.link { min-height: var(--control-height); color: var(--color-action); }
+.icon { width: var(--control-height); height: var(--control-height); padding: 0; border-radius: var(--radius-control); }
+.icon svg, .primary svg, .secondary svg, .danger svg { width: 18px; height: 18px; flex: 0 0 auto; }
+:where(button, [role="button"]):disabled { color: var(--color-text-tertiary); cursor: not-allowed; opacity: .58; filter: saturate(.45); box-shadow: none; }
+
+/* One focus language, visible on light, photo, and Memory surfaces. */
+:where(button, a, input, textarea, select, summary, [role="button"]):focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.9), 0 0 0 5px var(--color-focus);
+}
+
+/* Forms */
+:where(input, textarea, select) { min-height: 46px; padding: 11px 13px; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-input); background: var(--color-surface); color: var(--color-text-primary); box-shadow: inset 0 1px 1px rgba(36,51,47,.04); }
+:where(textarea) { min-height: 108px; line-height: 1.55; }
+:where(input, textarea, select):hover:not(:disabled) { border-color: var(--color-border-strong); }
+:where(input, textarea, select):focus { border-color: var(--color-action); box-shadow: 0 0 0 4px rgba(8,119,101,.1); }
+:where(input, textarea, select)[aria-invalid="true"] { border-color: var(--color-error); box-shadow: 0 0 0 4px rgba(185,79,82,.1); }
+:where(input, textarea, select):disabled { background: #eef2ef; color: var(--color-text-tertiary); opacity: 1; }
+label { gap: var(--space-2); color: var(--color-text-secondary); font-size: var(--text-label); }
+
+/* Shared surfaces */
+:where(.living-card, .card, .space-row, .profile-ideas > button) { border-color: var(--color-border-subtle); border-radius: var(--standard-card-radius); box-shadow: var(--shadow-card); }
+:where(.hero-quest, .remember-feature, .profile-hero) { border-radius: var(--hero-radius); box-shadow: var(--shadow-hero); }
+:where(.living-card, .card, .space-row, .inspiration-card):hover { box-shadow: var(--shadow-floating); }
+.cards { gap: var(--grid-gap); }
+.cover, .detail-hero, .memory-mode-header, .profile-memories button { background-position: center; background-repeat: no-repeat; background-size: cover; }
+.cover img, .moment-story > img, .memory-photos img { object-fit: cover; }
+img[loading="lazy"] { background: var(--color-surface-subtle); }
+
+/* Dialogs and sheets build on Sprint 1's independent scroll root. */
+.backdrop { background: var(--color-overlay); }
+.backdrop > .modal { border: 1px solid rgba(255,255,255,.72); border-radius: var(--radius-dialog); background: var(--color-surface-elevated); box-shadow: var(--shadow-modal); }
+.backdrop > .detail { border-radius: var(--radius-dialog); }
+.modal > header { gap: var(--space-4); }
+.modal > header h2 { font: 650 var(--text-section-title)/1.12 var(--font-editorial); }
+
+/* Tabs, chips, and navigation */
+:where(.segments, .tabs) { min-height: 48px; padding: var(--space-1); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-control); background: var(--color-surface-subtle); }
+:where(.segments, .tabs) button { min-height: 40px; padding: var(--space-2) var(--space-3); border-radius: 9px; color: var(--color-text-secondary); }
+:where(.segments, .tabs) button.active { color: #fff; background: var(--color-action); }
+:where(.chip, .pill, .quest-type-chip, .collection-badge) { border-radius: var(--radius-chip); }
+.chip { min-height: var(--control-height); padding: 8px 13px; }
+.nav { min-height: var(--navigation-height); border-color: var(--color-border-subtle); border-radius: var(--radius-card); background: rgba(255,253,248,.92); box-shadow: var(--shadow-navigation); }
+.nav button { min-height: 52px; border-radius: var(--radius-control); }
+
+/* Feedback foundation */
+:where(.notice, .error, .banner, .celebration) { border-radius: var(--radius-control); box-shadow: var(--shadow-floating); }
+.notice { color: var(--color-success); background: #eef9f4; border-color: #b9dfd0; }
+.error { color: var(--color-error); background: #fff3f2; border-color: #e9c0bf; }
+.banner { max-width: min(560px, calc(100vw - 24px)); }
+.connection:not(.online) { color: var(--color-warning); }
+.busy::before, .deferred-loading::before { border-radius: var(--radius-editorial-card); box-shadow: var(--shadow-card); }
+
+@media (max-width: 767px) {
+  :root { --grid-gap: var(--space-4); --hero-radius: 26px; }
+  .backdrop > .modal { border-radius: var(--radius-sheet) var(--radius-sheet) 12px 12px; }
+  :where(input, textarea, select) { font-size: 16px; }
+  .pagehead h1 { font-size: clamp(29px, 9vw, 38px); }
+}
+
+@media (max-width: 360px) {
+  :where(.segments, .tabs) { width: 100%; overflow-x: auto; }
+  :where(.segments, .tabs) button { flex: 1 0 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(button, a, input, textarea, select, summary, .living-card, .card, .modal) { transition-duration: .001ms !important; }
+}
