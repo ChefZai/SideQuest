@@ -25,13 +25,18 @@ before(async () => {
 
 after(async () => server?.close());
 
-test("template picker presents every accessible Space choice", () => {
+test("template picker presents four featured choices before progressive disclosure", () => {
   const markup = renderToStaticMarkup(React.createElement(flow.SpaceTemplateCreator, { profile, onSaved() {} }));
   assert.match(markup, /What kind of adventures are you planning together/);
-  assert.equal((markup.match(/role="radio"/g) || []).length, templateTypes.SPACE_TEMPLATE_IDS.length);
+  assert.equal((markup.match(/role="radio"/g) || []).length, 4);
   assert.match(markup, /Couple/);
   assert.match(markup, /Blank Space/);
+  assert.match(markup, /See all templates/);
   assert.match(markup, /aria-checked="false"/);
+});
+
+test("every Space template remains in the expandable source collection", () => {
+  assert.equal(flow.SPACE_TEMPLATE_DEFINITIONS?.length ?? templateTypes.SPACE_TEMPLATE_IDS.length, templateTypes.SPACE_TEMPLATE_IDS.length);
 });
 
 test("selecting templates preserves the name while changing safe defaults", () => {

@@ -73,7 +73,7 @@ test("invite and solo paths are both available", () => {
     onAlone() {},
   }));
   assert.match(markup, /Invite someone/);
-  assert.match(markup, /Continue alone/);
+  assert.match(markup, /Start exploring/);
 });
 
 test("invited members can add or react to shared Ideas", () => {

@@ -8,6 +8,7 @@
 .template-space-flow header h2 { max-width: 760px; }
 .template-space-lead { max-width: 64ch; margin: 6px 0 0; color: var(--sq-muted); line-height: 1.55; }
 .space-template-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.template-see-all { width: 100%; margin-top: 4px; }
 .space-template-card {
   min-height: 174px;
   padding: 18px;
@@ -46,6 +47,20 @@
 .space-template-selected p { margin: 2px 0 0; color: var(--sq-muted); font-size: 13px; }
 .space-template-selected > svg { width: 24px; color: var(--template-accent); }
 .template-space-fields { align-items: end; }
+.template-fast-name { max-width: 620px; font-size: 14px; }
+.template-fast-name input { min-height: 52px; font-size: 17px; }
+.template-ready-summary { padding: 15px 17px; border: 1px solid var(--sq-border); border-radius: var(--radius-card,18px); background: var(--sq-soft); }
+.template-ready-summary p { margin: 4px 0 0; color: var(--sq-muted); font-size: 13px; }
+.template-customize-button { width: fit-content; }
+.template-customization { display: grid; gap: 10px; }
+.template-customization > details { border: 1px solid var(--sq-border); border-radius: var(--radius-card,18px); background: #fff; overflow: clip; }
+.template-customization > details > summary { min-height: 58px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; }
+.template-customization > details > summary::-webkit-details-marker { display: none; }
+.template-customization > details > summary span { display: grid; gap: 2px; }
+.template-customization > details > summary small { color: var(--sq-muted); font-size: 12px; }
+.template-customization > details > summary svg { width: 18px; transition: transform var(--motion-quick,150ms); }
+.template-customization > details[open] > summary svg { transform: rotate(180deg); }
+.template-customization > details > :not(summary) { margin: 0 15px 15px; }
 .template-accent-picker { margin: 0; padding: 0; border: 0; }
 .template-accent-picker legend { margin-bottom: 10px; font-weight: 650; }
 .template-accent-picker > div { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -67,6 +82,7 @@
   .space-template-grid { grid-template-columns: 1fr; }
   .space-template-card { min-height: 150px; padding: 15px; }
   .template-space-actions { padding-bottom: env(safe-area-inset-bottom); }
+  .template-customize-button { width: 100%; }
 }
 
 @media (max-width: 360px) {

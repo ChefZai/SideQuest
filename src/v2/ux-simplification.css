@@ -1,0 +1,24 @@
+/* SideQuest 5.8 Sprint 3 — progressive first-use experience. */
+.template-see-all,.template-customize-button{align-self:center}.template-see-all svg,.template-customize-button svg{width:18px}
+.template-ready-summary{animation:sq-arrive var(--motion-standard) var(--ease-out) both}
+.template-customization{animation:sq-arrive var(--motion-standard) var(--ease-out) both}
+.template-customization summary:focus-visible{outline:3px solid var(--color-focus);outline-offset:-3px}
+.starter-idea-toolbar .link{margin-left:auto}.starter-idea-actions .icon[aria-pressed=true]{color:#fff;background:var(--color-action);border-color:var(--color-action)}
+
+/* Layout-shaped loading states replace a generic center spinner. */
+.busy{padding:var(--space-page-block) var(--space-page-inline);align-content:center}.busy:before{display:none!important}
+.busy-layout{width:min(760px,calc(100vw - 36px));display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)}
+.busy-layout span{min-height:150px;border-radius:var(--radius-card);background:linear-gradient(100deg,#edf2ef 20%,#fff 42%,#edf2ef 64%);background-size:220% 100%;box-shadow:var(--shadow-card);animation:sq-shimmer 1.45s linear infinite}
+.busy-layout span:first-child{grid-column:1/-1;min-height:clamp(230px,38vw,390px);border-radius:var(--hero-radius)}
+.busy-memory .busy-layout span:first-child{filter:saturate(.65);background:linear-gradient(100deg,#263a35 20%,#405650 42%,#263a35 64%);background-size:220% 100%}
+.busy-quest .busy-layout{max-width:680px}.busy p{font-size:var(--text-body-sm)}
+
+/* One branded, safe-area-aware feedback surface. */
+.toast,.celebration{top:calc(var(--safe-top) + var(--space-4));bottom:auto;max-width:min(430px,calc(100vw - 24px));border-radius:var(--radius-control);box-shadow:var(--shadow-floating)}
+.toast-success,.celebration{border-color:#b9dfd0;background:#f7fffaf2}.toast-info{border-color:#bfdce8;background:#f4fbfef2}.toast-warning{border-color:#e4d19d;background:#fffaf0f2}.toast-error{border-color:#e9c0bf;background:#fff3f2f2}
+
+/* Dark Memory controls keep the shared focus language visible. */
+.detail:has(.memory) :where(button,a,input,textarea,select):focus-visible,.memory-mode-header :where(button,a):focus-visible{outline-color:#f1cf67;box-shadow:0 0 0 2px rgba(23,39,36,.95),0 0 0 5px rgba(241,207,103,.72)}
+
+@media(max-width:767px){.busy-layout{grid-template-columns:1fr}.busy-layout span:first-child{min-height:240px}.busy-layout span:not(:first-child){min-height:112px}.template-ready-summary{padding:13px 14px}.starter-idea-toolbar{align-items:stretch;flex-direction:column}.starter-idea-toolbar .link{margin:0}.toast,.celebration{top:calc(var(--safe-top) + var(--space-3))}}
+@media(prefers-reduced-motion:reduce){.template-ready-summary,.template-customization,.busy-layout span{animation:none}}

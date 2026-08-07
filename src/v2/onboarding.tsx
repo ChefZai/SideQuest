@@ -92,13 +92,13 @@ export function OnboardingInviteChoice({
         <StepProgress current={3} />
         <div className="first-run-mark peach"><Users /></div>
         <p className="eyebrow">{space.emoji} {space.name}</p>
-        <h1>Who would make this Space more fun?</h1>
+        <h1>Bring someone along—or begin on your own.</h1>
         <p className="first-run-lead">
-          Bring someone along. SideQuest works best when possibilities are shared—but you can always start alone.
+          Invite someone whenever it feels right. You can start exploring now and share this Space later.
         </p>
         <div className="first-run-actions">
           <button className="primary" onClick={onInvite}><Users /> Invite someone</button>
-          <button className="secondary" onClick={onAlone}>Continue alone</button>
+          <button className="secondary" onClick={onAlone}>Start exploring</button>
         </div>
       </div>
     </main>
@@ -139,7 +139,7 @@ export function OnboardingIdeaIntro({ space }: { space: Space }) {
       <StepProgress current={4} />
       <p className="eyebrow">{space.emoji} {space.name}</p>
       <h1>Start something you want your future to hold.</h1>
-      <p>An experience, goal, journey, relationship intention, collection, or daily rhythm is enough.</p>
+      <p>A title, link, or photo is enough. Add more only when it helps.</p>
     </div>
   );
 }

@@ -26,7 +26,7 @@ export interface StarterIdeaApplyResult {
 
 export async function ensureStarterIdea({ spaceId, profile, categories, idea }: StarterIdeaWriteInput): Promise<"created" | "existing"> {
   const category = starterCategory(categories, idea);
-  if (!category) throw new Error("Keep or add at least one category before adding starter Ideas.");
+  if (!category) throw new Error("Keep or add at least one category before adding starter Quests.");
   const id = starterIdeaDocumentId(spaceId, idea.id);
   const reference = doc(db, "ideas", id);
   return withTimeout(runTransaction(db, async transaction => {

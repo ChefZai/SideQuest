@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, Check, X } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, Settings2, X } from "lucide-react";
 import type { UserProfile } from "../types/domain";
 import { DEFAULT_REACTIONS } from "../config/defaults";
 import { getCategoryPack } from "../features/templates/categoryPacks";
@@ -106,8 +106,12 @@ export function SpaceTemplateCreator({
   const [error, setError] = useState("");
   const [createdSpaceId, setCreatedSpaceId] = useState("");
   const [failedStarterTitles, setFailedStarterTitles] = useState<string[]>([]);
+  const [showAllTemplates, setShowAllTemplates] = useState(false);
+  const [customizing, setCustomizing] = useState(false);
   const submitting = useRef(false);
   const selected = draft.templateId ? getSpaceTemplateDefinition(draft.templateId) : null;
+  const featuredTemplateIds: SpaceTemplateId[] = ["couple", "friends", "travel", "blank"];
+  const visibleTemplates = showAllTemplates ? SPACE_TEMPLATE_DEFINITIONS : SPACE_TEMPLATE_DEFINITIONS.filter(template => featuredTemplateIds.includes(template.id));
 
   const choose = (templateId: SpaceTemplateId) => setDraft(current => selectSpaceTemplate(current, templateId));
   const starterInputs = (spaceId: string) => draft.starterIdeas.map(idea => ({ spaceId, profile, categories: draft.categories, idea }));
@@ -168,12 +172,12 @@ export function SpaceTemplateCreator({
 
   if (createdSpaceId && failedStarterTitles.length) return <section className="modal panel starter-partial" aria-labelledby="starter-partial-title">
     <p className="eyebrow">Your Space is safe</p>
-    <h2 id="starter-partial-title">A few starting Ideas need another try</h2>
-    <p>The Space was created successfully. These Ideas are still waiting: {failedStarterTitles.join(", ")}.</p>
+    <h2 id="starter-partial-title">A few starting Quests need another try</h2>
+    <p>The Space was created successfully. These Quests are still waiting: {failedStarterTitles.join(", ")}.</p>
     {error && <div className="error" role="alert">{error}</div>}
     <div className="starter-partial-actions">
       <button type="button" className="secondary" disabled={busy} onClick={() => onSaved(createdSpaceId, draft.inviteAfter)}>Continue without them</button>
-      <button type="button" className="primary" disabled={busy} onClick={retryStarterIdeas}>{busy ? "Trying again..." : "Retry starter Ideas"}</button>
+      <button type="button" className="primary" disabled={busy} onClick={retryStarterIdeas}>{busy ? "Trying again..." : "Retry starter Quests"}</button>
     </div>
   </section>;
   if (draft.step === "template") return <section className="modal panel template-space-flow" aria-labelledby="space-template-title">
@@ -181,12 +185,12 @@ export function SpaceTemplateCreator({
       <div>
         <p className="eyebrow">A starting point, never a limitation</p>
         <h2 id="space-template-title">What kind of adventures are you planning together?</h2>
-        <p className="template-space-lead">Choose the closest fit. You can personalize everything before the Space is created.</p>
+        <p className="template-space-lead">Choose a simple starting point. Everything can change later.</p>
       </div>
       {onClose && <button type="button" className="icon" aria-label="Close Space creation" onClick={onClose}><X /></button>}
     </header>
     <div className="space-template-grid" role="radiogroup" aria-label="Space templates">
-      {SPACE_TEMPLATE_DEFINITIONS.map(template => <button
+      {visibleTemplates.map(template => <button
         key={template.id}
         type="button"
         role="radio"
@@ -202,6 +206,7 @@ export function SpaceTemplateCreator({
         </span>
       </button>)}
     </div>
+    {!showAllTemplates && <button type="button" className="secondary template-see-all" onClick={() => setShowAllTemplates(true)}>See all templates <ChevronDown aria-hidden="true" /></button>}
   </section>;
 
   return <form className="modal panel template-space-flow template-space-customize" onSubmit={submit}>
@@ -209,7 +214,7 @@ export function SpaceTemplateCreator({
       <div>
         <p className="eyebrow">Make the starting point yours</p>
         <h2>Shape your {selected?.name} Space</h2>
-        <p className="template-space-lead">Nothing is saved until you choose Create Space.</p>
+        <p className="template-space-lead">Name it now. The suggested details are ready whenever you are.</p>
       </div>
       {onClose && <button type="button" className="icon" aria-label="Close Space creation" onClick={onClose}><X /></button>}
     </header>
@@ -220,33 +225,20 @@ export function SpaceTemplateCreator({
       <Check aria-hidden="true" />
     </div>
 
-    <div className="twocol template-space-fields">
-      <label>Space emoji<input aria-label="Space emoji" value={draft.emoji} maxLength={8} onChange={event => setDraft(current => ({ ...current, emoji: event.target.value }))} /></label>
-      <label>Space name<input autoFocus required maxLength={80} value={draft.name} onChange={event => setDraft(current => ({ ...current, name: event.target.value }))} placeholder="Our next adventures" /></label>
-    </div>
+    <label className="template-fast-name">Space name<input autoFocus required maxLength={80} value={draft.name} onChange={event => setDraft(current => ({ ...current, name: event.target.value }))} placeholder="Our next adventures" /></label>
 
-    <fieldset className="template-accent-picker">
-      <legend>Accent theme</legend>
-      <div role="radiogroup" aria-label="Space accent theme">
-        {ACCENT_THEMES.map(accent => <button
-          key={accent}
-          type="button"
-          role="radio"
-          aria-checked={draft.accentTheme === accent}
-          className={`accent-choice accent-${accent}${draft.accentTheme === accent ? " selected" : ""}`}
-          onClick={() => setDraft(current => ({ ...current, accentTheme: accent }))}
-        ><span aria-hidden="true" />{ACCENT_LABELS[accent]}{draft.accentTheme === accent && <Check aria-hidden="true" />}</button>)}
-      </div>
-    </fieldset>
+    <aside className="template-ready-summary" aria-label={`${selected?.name} defaults`}><b>{selected?.name} comes ready with:</b><p>{draft.categories.slice(0, 4).map(category => category.label).join(" · ") || "A completely open Space"}{draft.addStarterIdeas && draft.starterIdeas.length ? ` · ${draft.starterIdeas.length} starter Quests` : ""}</p></aside>
 
-    <CategoryPackEditor categories={draft.categories} onChange={categories => setDraft(current => ({ ...current, categories }))} />
-
-    <StarterIdeaEditor available={draft.templateId !== "blank"} enabled={draft.addStarterIdeas} ideas={draft.starterIdeas} categoryCount={draft.categories.length} onEnabled={addStarterIdeas => setDraft(current => ({ ...current, addStarterIdeas }))} onChange={starterIdeas => setDraft(current => ({ ...current, starterIdeas }))} />
-
-    {!onboarding && <label className="toggle invite-later"><input type="checkbox" checked={draft.inviteAfter} onChange={event => setDraft(current => ({ ...current, inviteAfter: event.target.checked }))} /><span><b>Invite someone next</b><small>You can also invite people later from Space settings.</small></span></label>}
+    {!customizing && <button type="button" className="secondary template-customize-button" onClick={() => setCustomizing(true)}><Settings2 aria-hidden="true" />Customize</button>}
+    {customizing && <div className="template-customization" aria-label="Optional Space customization">
+      <details open><summary><span><b>Identity</b><small>{draft.emoji} {draft.name || "Name and emoji"}</small></span><ChevronDown aria-hidden="true" /></summary><label>Space emoji<input aria-label="Space emoji" value={draft.emoji} maxLength={8} onChange={event => setDraft(current => ({ ...current, emoji: event.target.value }))} /></label></details>
+      <details><summary><span><b>Appearance</b><small>{ACCENT_LABELS[draft.accentTheme]}</small></span><ChevronDown aria-hidden="true" /></summary><fieldset className="template-accent-picker"><legend>Accent theme</legend><div role="radiogroup" aria-label="Space accent theme">{ACCENT_THEMES.map(accent => <button key={accent} type="button" role="radio" aria-checked={draft.accentTheme === accent} className={`accent-choice accent-${accent}${draft.accentTheme === accent ? " selected" : ""}`} onClick={() => setDraft(current => ({ ...current, accentTheme: accent }))}><span aria-hidden="true" />{ACCENT_LABELS[accent]}{draft.accentTheme === accent && <Check aria-hidden="true" />}</button>)}</div></fieldset></details>
+      <details><summary><span><b>Categories</b><small>{draft.categories.length} ready</small></span><ChevronDown aria-hidden="true" /></summary><CategoryPackEditor categories={draft.categories} onChange={categories => setDraft(current => ({ ...current, categories }))} /></details>
+      <details><summary><span><b>Starter Quests</b><small>{draft.addStarterIdeas ? `${draft.starterIdeas.length} selected` : "Off"}</small></span><ChevronDown aria-hidden="true" /></summary><StarterIdeaEditor available={draft.templateId !== "blank"} enabled={draft.addStarterIdeas} ideas={draft.starterIdeas} categories={draft.categories} onEnabled={addStarterIdeas => setDraft(current => ({ ...current, addStarterIdeas }))} onChange={starterIdeas => setDraft(current => ({ ...current, starterIdeas }))} /></details>
+    </div>}
     {error && <div className="error" role="alert">{error}</div>}
     <footer className="template-space-actions">
-      <button type="button" className="secondary" disabled={busy} onClick={() => setDraft(current => ({ ...current, step: "template" }))}><ArrowLeft />Back</button>
+      <button type="button" className="secondary" disabled={busy} onClick={() => { setCustomizing(false); setDraft(current => ({ ...current, step: "template" })); }}><ArrowLeft />Back</button>
       <button className="primary" disabled={busy || !draft.name.trim()}>{busy ? "Creating Space…" : "Create Space"}</button>
     </footer>
   </form>;
