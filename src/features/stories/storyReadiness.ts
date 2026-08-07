@@ -22,16 +22,23 @@ export function memoryStoryReadiness(
   space: Space,
 ): MemoryStoryReadiness {
   const completed = quest.completedAt?.toDate?.();
+  const photoUrls = Array.isArray(memory.photoUrls)
+    ? memory.photoUrls.filter((value): value is string => typeof value === "string" && value.length > 0)
+    : [];
+  const memberIds = Array.isArray(space.memberIds) ? space.memberIds : [];
+  const safeReflections = Array.isArray(reflections) ? reflections : [];
   return {
-    coverPhoto: memory.photoUrls[0] || quest.photoUrl || "",
+    coverPhoto: photoUrls[0] || quest.photoUrl || "",
     completionLabel: completed
       ? `Became a Memory on ${completed.toLocaleDateString()}`
       : "A completed Journey worth returning to",
-    peopleLabel: space.memberIds.length === 1
+    peopleLabel: memberIds.length === 1
       ? "A personal Journey"
-      : `Shared by ${space.memberIds.length} people`,
-    photoLabel: `${memory.photoUrls.length} ${memory.photoUrls.length === 1 ? "photo" : "photos"}`,
-    reflectionLabel: `${reflections.length} ${reflections.length === 1 ? "reflection" : "reflections"}`,
+      : memberIds.length > 1
+        ? `Shared by ${memberIds.length} people`
+        : "People can be added when the moment is right",
+    photoLabel: `${photoUrls.length} ${photoUrls.length === 1 ? "photo" : "photos"}`,
+    reflectionLabel: `${safeReflections.length} ${safeReflections.length === 1 ? "reflection" : "reflections"}`,
     locationLabel: quest.location ? `Remembered in ${quest.location}` : "",
     source: {
       questId: quest.id,
@@ -41,4 +48,3 @@ export function memoryStoryReadiness(
     },
   };
 }
-

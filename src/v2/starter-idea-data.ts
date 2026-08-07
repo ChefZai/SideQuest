@@ -1,4 +1,4 @@
-import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
+import { collection, doc, getDocs, limit, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { CURRENT_IDEA_TEMPLATE_VERSION } from "../features/templates/templateTypes";
 import {
@@ -29,11 +29,15 @@ export async function ensureStarterIdea({ spaceId, profile, categories, idea }: 
   if (!category) throw new Error("Keep or add at least one category before adding starter Quests.");
   const id = starterIdeaDocumentId(spaceId, idea.id);
   const reference = doc(db, "ideas", id);
-  return withTimeout(runTransaction(db, async transaction => {
-    const current = await transaction.get(reference);
-    if (current.exists()) return "existing" as const;
-    const templateData = sanitizeTemplateData(idea.templateId, idea.templateData);
-    transaction.set(reference, {
+  const existing = await withTimeout(getDocs(query(
+    collection(db, "ideas"),
+    where("spaceId", "==", spaceId),
+    where("starterId", "==", idea.id),
+    limit(1),
+  )), 15000, `Checking ${idea.title}`);
+  if (!existing.empty) return "existing";
+  const templateData = sanitizeTemplateData(idea.templateId, idea.templateData);
+  await withTimeout(setDoc(reference, {
       spaceId,
       title: idea.title.trim(),
       description: idea.description.trim(),
@@ -60,9 +64,8 @@ export async function ensureStarterIdea({ spaceId, profile, categories, idea }: 
       starterId: idea.id,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-    });
-    return "created" as const;
   }), 15000, `Adding ${idea.title}`);
+  return "created";
 }
 
 export async function applyStarterIdeas(

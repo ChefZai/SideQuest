@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import AppV2 from "./v2/AppV2";
+import { AppErrorBoundary } from "./platform/AppErrorBoundary";
 import "./v2/v2.css";
 import "./v2/mobile-shell.css";
 import "./v2/mobile-architecture.css";
@@ -17,6 +18,6 @@ import "./v2/design-system.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AppV2 />
+    <AppErrorBoundary><AppV2 /></AppErrorBoundary>
   </StrictMode>,
 );

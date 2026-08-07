@@ -1,5 +1,6 @@
 import { Check, Image, MapPin, MessageCircle, Pause, Play, Sparkles, Star, Users } from "lucide-react";
 import type { MomentRecord } from "../features/journeys/journeyTypes";
+import { ResilientImage } from "./ResilientImage";
 
 const ICONS = {
   "quest-created": Sparkles,
@@ -33,7 +34,7 @@ export function MomentCard({ moment }: { moment: MomentRecord }) {
       <div className="moment-story">
         <header><div><h4>{moment.title}</h4><p>{moment.actorName}</p></div><time>{momentTime(moment)}</time></header>
         {moment.description && <p>{moment.description}</p>}
-        {moment.imageUrl && <img src={moment.imageUrl} alt="" loading="lazy" decoding="async" />}
+        {moment.imageUrl && <ResilientImage src={moment.imageUrl} alt="" loading="lazy" sizes="(max-width: 767px) 100vw, 640px" />}
         <footer>
           {moment.location && <span><MapPin aria-hidden="true" />{moment.location}</span>}
           {moment.people?.length ? <span><Users aria-hidden="true" />{moment.people.join(", ")}</span> : null}

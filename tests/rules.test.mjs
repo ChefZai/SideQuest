@@ -12,6 +12,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  limit,
   collection,
   query,
   setDoc,
@@ -213,6 +214,28 @@ test("owners and authorized members can create valid Ideas that Space members ca
     const visible = await assertSucceeds(getDocs(query(collection(db, "ideas"), where("spaceId", "==", spaceId))));
     assert.ok(visible.docs.some(snapshot => snapshot.id === ideaId));
   }
+});
+
+test("members can safely check a Space-scoped starter Quest before deterministic creation", async () => {
+  const db = env.authenticatedContext(memberId).firestore();
+  const starterQuery = query(
+    collection(db, "ideas"),
+    where("spaceId", "==", spaceId),
+    where("starterId", "==", "sunset-date"),
+    limit(1),
+  );
+  const before = await assertSucceeds(getDocs(starterQuery));
+  assert.equal(before.empty, true);
+  await assertSucceeds(setDoc(doc(db, "ideas", `starter-${spaceId}-sunset-date`), {
+    spaceId,
+    starterId: "sunset-date",
+    title: "Plan a sunset date",
+    category: "Activity",
+    createdBy: memberId,
+    completed: false,
+  }));
+  const after = await assertSucceeds(getDocs(starterQuery));
+  assert.equal(after.size, 1);
 });
 
 test("outsiders and invalid Space references cannot create Ideas", async () => {

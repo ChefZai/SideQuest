@@ -20,5 +20,10 @@
 /* Dark Memory controls keep the shared focus language visible. */
 .detail:has(.memory) :where(button,a,input,textarea,select):focus-visible,.memory-mode-header :where(button,a):focus-visible{outline-color:#f1cf67;box-shadow:0 0 0 2px rgba(23,39,36,.95),0 0 0 5px rgba(241,207,103,.72)}
 
-@media(max-width:767px){.busy-layout{grid-template-columns:1fr}.busy-layout span:first-child{min-height:240px}.busy-layout span:not(:first-child){min-height:112px}.template-ready-summary{padding:13px 14px}.starter-idea-toolbar{align-items:stretch;flex-direction:column}.starter-idea-toolbar .link{margin:0}.toast,.celebration{top:calc(var(--safe-top) + var(--space-3))}}
-@media(prefers-reduced-motion:reduce){.template-ready-summary,.template-customization,.busy-layout span{animation:none}}
+.resilient-image{opacity:0;transition:opacity var(--motion-standard) var(--ease-out)}.resilient-image.is-ready{opacity:1}.cover .idea-card-fallback{position:absolute;inset:0;display:grid;place-items:center}.cover .resilient-image+.cover-shade{position:relative;z-index:1}.cover .resilient-image.is-ready~.idea-card-fallback{opacity:0}
+.moment-list,.moment-card,.moment-story{min-width:0}.moment-card{width:100%}
+.stars button{min-width:44px}
+.help-section-links a,.help-section-links button{min-width:44px}
+
+@media(max-width:767px){.busy-layout{grid-template-columns:1fr}.busy-layout span:first-child{min-height:240px}.busy-layout span:not(:first-child){min-height:112px}.template-ready-summary{padding:13px 14px}.starter-idea-toolbar{align-items:stretch;flex-direction:column}.starter-idea-toolbar .link{margin:0}.toast,.celebration{top:calc(var(--safe-top) + var(--space-3))}.moment-card time{white-space:normal}}
+@media(prefers-reduced-motion:reduce){.template-ready-summary,.template-customization,.busy-layout span{animation:none}.resilient-image{transition:none}}
